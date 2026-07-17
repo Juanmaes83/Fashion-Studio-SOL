@@ -9,6 +9,7 @@
 import { copyFile, mkdir, readFile, writeFile } from "node:fs/promises";
 import { existsSync } from "node:fs";
 import path from "node:path";
+import { ONTOLOGY, validateGarment, isPublishable } from "../packages/fashion-schema/validate.mjs";
 
 const args = {};
 const argv = process.argv.slice(2);
@@ -68,11 +69,24 @@ for (const g of library) {
   assets.push(asset);
   const modeled = resolveAsset(g.modeledImage, "garment");
   if (modeled) assets.push(modeled);
+  const v1 = validateGarment(g);
+  if (!v1.ok) { errors.push(...v1.errors); continue; }
   products.push({
     id: g.id,
     name: g.name,
-    line: PART_LABEL[g.part],
+    description: g.description || "",
+    line: ONTOLOGY.category.labels[g.category] || PART_LABEL[g.part],
     part: g.part,
+    category: g.category || null,
+    subcategory: g.subcategory || null,
+    garmentType: g.garmentType || null,
+    material: g.material || null,
+    silhouette: g.silhouette || null,
+    fit: g.fit || null,
+    style: g.style || null,
+    season: g.season || [],
+    occasion: g.occasion || [],
+    thermalWeight: g.thermalWeight ?? null,
     price: typeof g.price === "number" ? g.price : defaultPrice,
     color: g.color.toLowerCase(),
     secondaryColor: g.secondaryColor?.toLowerCase?.() || null,
@@ -85,8 +99,11 @@ for (const g of library) {
 const outfitsRaw = await readJson(path.join(dataDir, "outfits.json"), { outfits: [] });
 const productIds = new Set(products.map(p => p.id));
 const outfits = [];
+let skippedUnpublishable = 0;
 for (const o of outfitsRaw.outfits || []) {
   const where = `outfit ${o.id || "?"}`;
+  // Regla de publicación (Fase 4): solo approved/published salen al storefront.
+  if (!isPublishable(o)) { skippedUnpublishable++; continue; }
   if (!o.id || !o.name || !Array.isArray(o.garmentIds) || !o.garmentIds.length) {
     errors.push(`${where}: id/name/garmentIds obligatorios`); continue;
   }
@@ -122,5 +139,7 @@ await writeFile(path.join(outDir, "catalog.json"), JSON.stringify(catalog, null,
 
 console.log(JSON.stringify({
   out: outDir, products: products.length, outfits: outfits.length,
-  images: new Set(assets.map(a => a.base)).size
+  skippedUnpublishable,
+  images: new Set(assets.map(a => a.base)).size,
+  ontology: ONTOLOGY.version
 }, null, 2));
