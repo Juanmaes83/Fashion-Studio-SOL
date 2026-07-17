@@ -4,6 +4,7 @@ import { withTransaction } from "./db.mjs";
 import { reviewTransition, sanitizeNewOutfitStatus, validateGarment, validateOutfit } from "../../../packages/fashion-schema/validate.mjs";
 
 const hashToken = token => createHash("sha256").update(token).digest("hex");
+const asJson = value => JSON.stringify(value ?? null);
 const rowToGarment = row => ({
   id: row.id, name: row.name, description: row.description, bodyArea: row.body_area,
   part: row.part, category: row.category, subcategory: row.subcategory,
@@ -38,9 +39,9 @@ export async function createGarment(pool, projectId, input) {
     garment.bodyArea || garment.part, garment.category || null, garment.subcategory || null,
     garment.garmentType || null, garment.material || null, garment.pattern || null,
     garment.silhouette || null, garment.fit || null, garment.style || null,
-    garment.season || [], garment.occasion || [], garment.thermalWeight || null,
-    garment.color || null, garment.secondaryColor || null, garment.tags || [],
-    garment.fieldProvenance || {}, garment.source || {}, garment.review || {}];
+    asJson(garment.season || []), asJson(garment.occasion || []), garment.thermalWeight || null,
+    garment.color || null, garment.secondaryColor || null, asJson(garment.tags || []),
+    asJson(garment.fieldProvenance || {}), asJson(garment.source || {}), asJson(garment.review || {})];
   const sql = `INSERT INTO garments(id,project_id,name,description,part,body_area,category,subcategory,garment_type,material,pattern,silhouette,fit,style,season,occasion,thermal_weight,color,secondary_color,tags,field_provenance,source,review)
     VALUES($1,$2,$3,$4,$5,$6,$7,$8,$9,$10,$11,$12,$13,$14,$15,$16,$17,$18,$19,$20,$21,$22,$23) RETURNING *`;
   return rowToGarment((await pool.query(sql, values)).rows[0]);
@@ -53,7 +54,7 @@ export async function updateGarment(pool, projectId, id, patch, expectedVersion)
   const validation = validateGarment(next);
   if (!validation.ok) throw new ApiError(422, "GARMENT_INVALID", "Garment is invalid", validation.errors);
   const result = await pool.query(`UPDATE garments SET name=$3,description=$4,part=$5,body_area=$6,category=$7,subcategory=$8,garment_type=$9,material=$10,pattern=$11,silhouette=$12,fit=$13,style=$14,season=$15,occasion=$16,thermal_weight=$17,color=$18,secondary_color=$19,tags=$20,field_provenance=$21,source=$22,review=$23,version=version+1,updated_at=now() WHERE project_id=$1 AND id=$2 AND version=$24 RETURNING *`,
-    [projectId,id,next.name,next.description||"",next.part||next.bodyArea,next.bodyArea||next.part,next.category||null,next.subcategory||null,next.garmentType||null,next.material||null,next.pattern||null,next.silhouette||null,next.fit||null,next.style||null,next.season||[],next.occasion||[],next.thermalWeight||null,next.color||null,next.secondaryColor||null,next.tags||[],next.fieldProvenance||{},next.source||{},next.review||{},expectedVersion]);
+    [projectId,id,next.name,next.description||"",next.part||next.bodyArea,next.bodyArea||next.part,next.category||null,next.subcategory||null,next.garmentType||null,next.material||null,next.pattern||null,next.silhouette||null,next.fit||null,next.style||null,asJson(next.season||[]),asJson(next.occasion||[]),next.thermalWeight||null,next.color||null,next.secondaryColor||null,asJson(next.tags||[]),asJson(next.fieldProvenance||{}),asJson(next.source||{}),asJson(next.review||{}),expectedVersion]);
   if (!result.rowCount) throw new ApiError(409, "VERSION_CONFLICT", "Garment changed since it was read");
   return rowToGarment(result.rows[0]);
 }
@@ -76,7 +77,7 @@ export async function createOutfit(pool, projectId, input) {
     const outfit = { ...input, status: sanitizeNewOutfitStatus() };
     const validation = validateOutfit(outfit, garmentMap);
     if (!validation.ok) throw new ApiError(422, "OUTFIT_INVALID", "Outfit is invalid", validation.errors);
-    const created = (await client.query(`INSERT INTO outfits(id,project_id,name,description,style,occasion,season,tags,status,source) VALUES($1,$2,$3,$4,$5,$6,$7,$8,$9,$10) RETURNING *`, [outfit.id,projectId,outfit.name,outfit.description||"",outfit.style||null,outfit.occasion||[],outfit.season||[],outfit.tags||[],outfit.status,outfit.source||"manual"])).rows[0];
+    const created = (await client.query(`INSERT INTO outfits(id,project_id,name,description,style,occasion,season,tags,status,source) VALUES($1,$2,$3,$4,$5,$6,$7,$8,$9,$10) RETURNING *`, [outfit.id,projectId,outfit.name,outfit.description||"",outfit.style||null,asJson(outfit.occasion||[]),asJson(outfit.season||[]),asJson(outfit.tags||[]),outfit.status,outfit.source||"manual"])).rows[0];
     for (const [position, garmentId] of outfit.garmentIds.entries()) await client.query("INSERT INTO outfit_items(project_id,outfit_id,garment_id,position) VALUES($1,$2,$3,$4)",[projectId,outfit.id,garmentId,position]);
     return { ...rowToOutfit(created), garmentIds: outfit.garmentIds };
   });
@@ -106,7 +107,7 @@ export async function createPublication(pool, projectId, publishedBy="admin") {
     const checksum = createHash("sha256").update(JSON.stringify(snapshot)).digest("hex");
     await client.query("UPDATE publications SET status='withdrawn',withdrawn_at=now() WHERE project_id=$1 AND status='active'",[projectId]);
     const version = Number((await client.query("SELECT COALESCE(MAX(version),0)+1 value FROM publications WHERE project_id=$1",[projectId])).rows[0].value);
-    return (await client.query("INSERT INTO publications(project_id,version,snapshot,checksum_sha256,published_by) VALUES($1,$2,$3,$4,$5) RETURNING id,project_id,version,status,checksum_sha256,published_at",[projectId,version,snapshot,checksum,publishedBy])).rows[0];
+    return (await client.query("INSERT INTO publications(project_id,version,snapshot,checksum_sha256,published_by) VALUES($1,$2,$3,$4,$5) RETURNING id,project_id,version,status,checksum_sha256,published_at",[projectId,version,asJson(snapshot),checksum,publishedBy])).rows[0];
   });
 }
 
@@ -131,7 +132,7 @@ export async function createSavedLook(pool, projectSlug, input) {
   if (!Array.isArray(input.garmentIds) || !input.garmentIds.length || input.garmentIds.some(id => !allowed.has(id))) throw new ApiError(422,"SAVED_LOOK_INVALID","SavedLook contains unavailable garments");
   const token = randomBytes(32).toString("base64url");
   const expiresAt = input.expiresAt || null;
-  const row = (await pool.query("INSERT INTO saved_looks(project_id,public_token_hash,outfit_id,garment_ids,expires_at) VALUES($1,$2,$3,$4,$5) RETURNING id,expires_at,created_at",[projectId,hashToken(token),input.outfitId||null,input.garmentIds,expiresAt])).rows[0];
+  const row = (await pool.query("INSERT INTO saved_looks(project_id,public_token_hash,outfit_id,garment_ids,expires_at) VALUES($1,$2,$3,$4,$5) RETURNING id,expires_at,created_at",[projectId,hashToken(token),input.outfitId||null,asJson(input.garmentIds),expiresAt])).rows[0];
   return { ...row, token };
 }
 
