@@ -12,7 +12,7 @@ const expectStatus=(result,expected)=>assert.equal(result.response.status,expect
 await pool.query("INSERT INTO workspaces(id,slug,name) VALUES('ws-sol','sol','SOL')");
 await pool.query("INSERT INTO brands(id,workspace_id,slug,name) VALUES('brand-sol','ws-sol','sol','SOL')");
 await pool.query("INSERT INTO projects(id,workspace_id,brand_id,slug,name) VALUES('project-sol','ws-sol','brand-sol','sol-store','SOL Store')");
-expectStatus(await call('/health'),200); assert.equal((await call('/ready')).payload.database,'ok'); assert.equal((await call('/version')).payload.contract,'phase-2c/v1'); expectStatus(await call('/admin/projects/project-sol/garments'),401);
+expectStatus(await call('/health'),200); assert.equal((await call('/ready')).payload.database,'ok'); assert.equal((await call('/version')).payload.contract,'phase-2d/v1'); expectStatus(await call('/admin/projects/project-sol/garments'),401);
 const shirt={id:'shirt-white',name:'Camisa blanca',bodyArea:'upperbody',category:'tops',garmentType:'shirt',color:'#ffffff',season:['all-season'],occasion:['office'],tags:['core']};
 let result=await call('/admin/projects/project-sol/garments',{method:'POST',auth:true,body:shirt}); expectStatus(result,201); assert.equal(result.payload.version,1);
 const trousers={id:'trousers-black',name:'Pantalón negro',bodyArea:'lowerbody',category:'bottoms',garmentType:'trousers',color:'#000000',season:['all-season'],occasion:['office']};
