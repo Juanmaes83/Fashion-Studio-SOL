@@ -78,14 +78,14 @@ const OUTFITS = [
     garments: ["ivory-boxy-tee", "camel-wide-trousers", "cloud-court-sneakers", "olive-canvas-tote"],
     occasion: ["casual", "office"], season: ["spring", "autumn"],
     reason: "Neutros cálidos con un solo acento verde: base tonal, peso visual abajo.",
-    setting: "patio de piedra clara con vegetación contenida", status: "accepted"
+    setting: "patio de piedra clara con vegetación contenida", status: "approved"
   },
   {
     id: "ink-evening-layer", name: "Ink Evening Layer",
     garments: ["terracotta-slip-dress", "ink-lounge-jacket", "cloud-court-sneakers"],
     occasion: ["evening", "smart-casual"], season: ["autumn"],
     reason: "La capa tinta enmarca el vestido terracota; una sola pieza saturada domina.",
-    setting: "callejón de galería al atardecer", status: "accepted"
+    setting: "callejón de galería al atardecer", status: "rejected"
   }
 ];
 
@@ -123,7 +123,7 @@ for (const o of OUTFITS) {
   outfits.push({
     id: o.id, name: o.name, occasion: o.occasion, season: o.season,
     garmentIds: o.garments.map(s => `import-${s}`),
-    reason: o.reason, setting: o.setting,
+    reason: o.reason, setting: o.setting, source: "fixture",
     image: `outfit-images/${o.id}.png`, status: o.status
   });
 }

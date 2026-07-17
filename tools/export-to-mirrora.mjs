@@ -9,7 +9,7 @@
 import { copyFile, mkdir, readFile, writeFile } from "node:fs/promises";
 import { existsSync } from "node:fs";
 import path from "node:path";
-import { ONTOLOGY, validateGarment, isPublishable } from "../packages/fashion-schema/validate.mjs";
+import { ONTOLOGY, validateGarment, validateOutfit, isPublishable } from "../packages/fashion-schema/validate.mjs";
 
 const args = {};
 const argv = process.argv.slice(2);
@@ -97,18 +97,18 @@ for (const g of library) {
 }
 
 const outfitsRaw = await readJson(path.join(dataDir, "outfits.json"), { outfits: [] });
-const productIds = new Set(products.map(p => p.id));
+// Biblioteca completa (con part/bodyArea) para validar outfits íntegramente.
+const garmentsById = Object.fromEntries(library.map(g => [g.id, g]));
 const outfits = [];
 let skippedUnpublishable = 0;
 for (const o of outfitsRaw.outfits || []) {
   const where = `outfit ${o.id || "?"}`;
   // Regla de publicación (Fase 4): solo approved/published salen al storefront.
   if (!isPublishable(o)) { skippedUnpublishable++; continue; }
-  if (!o.id || !o.name || !Array.isArray(o.garmentIds) || !o.garmentIds.length) {
-    errors.push(`${where}: id/name/garmentIds obligatorios`); continue;
-  }
-  const missing = o.garmentIds.filter(id => !productIds.has(id));
-  if (missing.length) { errors.push(`${where}: garmentIds no resueltos: ${missing.join(", ")}`); continue; }
+  // Validación íntegra: id/slug, estado, garmentIds existentes, conflictos de slot,
+  // vocabulario. Ningún outfit publicable inválido puede cruzar hacia el catálogo.
+  const v = validateOutfit(o, garmentsById);
+  if (!v.ok) { errors.push(...v.errors.map(e => `${where}: ${e}`)); continue; }
   const asset = resolveAsset(o.image, "outfit");
   if (asset) assets.push(asset);
   outfits.push({

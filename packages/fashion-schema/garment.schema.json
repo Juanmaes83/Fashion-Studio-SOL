@@ -1,44 +1,295 @@
 {
   "$schema": "https://json-schema.org/draft/2020-12/schema",
-  "$id": "https://fashion-studio-sol.dev/schemas/garment/v0.1",
+  "$id": "https://fashion-studio-sol.dev/schemas/garment/1.1.0",
   "title": "Garment",
-  "description": "Prenda del catálogo. Núcleo = contrato real de wardrobe data/library.json; ontología V1 del README maestro como campos opcionales.",
+  "_generated": "Generado por tools/build-schemas.mjs desde ontology.json. NO EDITAR.",
+  "description": "Prenda. Vocabularios y reglas derivados de la Ontología V1 canónica.",
   "type": "object",
-  "required": ["id", "name", "part", "color", "image"],
+  "required": [
+    "id",
+    "name",
+    "part"
+  ],
   "properties": {
-    "id": { "type": "string", "minLength": 1 },
-    "name": { "type": "string", "minLength": 1, "maxLength": 120 },
-    "part": { "enum": ["upperbody", "wholebody_up", "lowerbody", "accessories_up", "shoes"] },
-    "color": { "$ref": "#/$defs/hex" },
-    "secondaryColor": { "anyOf": [{ "$ref": "#/$defs/hex" }, { "type": "null" }] },
-    "palette": { "type": "array", "items": { "$ref": "#/$defs/hex" } },
-    "tags": { "type": "array", "items": { "type": "string" }, "maxItems": 12 },
-    "image": { "type": "string", "minLength": 1 },
-    "thumbnail": { "type": "string" },
-    "modeledImage": { "anyOf": [{ "type": "string" }, { "type": "null" }] },
-    "importJobId": { "type": "string" },
-
-    "category": { "type": "string" },
-    "subcategory": { "type": "string" },
-    "material": { "type": "string" },
-    "pattern": { "type": "string" },
-    "silhouette": { "type": "string" },
-    "fit": { "type": "string" },
-    "season": { "type": "array", "items": { "enum": ["spring", "summer", "autumn", "winter"] } },
-    "style": { "type": "array", "items": { "type": "string" } },
-    "occasion": { "type": "array", "items": { "type": "string" } },
-    "thermalWeight": { "enum": ["light", "mid", "heavy", null] },
-
-    "sku": { "type": "string" },
-    "brand": { "type": "string" },
-    "price": { "type": "number", "minimum": 0 },
-    "currency": { "type": "string", "minLength": 3, "maxLength": 3 },
-    "sizes": { "type": "array", "items": { "type": "string" } },
-    "stock": { "type": "integer", "minimum": 0 },
-    "productUrl": { "type": "string" }
+    "id": {
+      "type": "string",
+      "minLength": 1
+    },
+    "name": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 120
+    },
+    "description": {
+      "type": "string"
+    },
+    "part": {
+      "enum": [
+        "upperbody",
+        "wholebody_up",
+        "lowerbody",
+        "shoes",
+        "accessories_up"
+      ]
+    },
+    "bodyArea": {
+      "enum": [
+        "upperbody",
+        "wholebody_up",
+        "lowerbody",
+        "shoes",
+        "accessories_up"
+      ]
+    },
+    "color": {
+      "type": "string",
+      "pattern": "^#[0-9a-fA-F]{6}$"
+    },
+    "secondaryColor": {
+      "anyOf": [
+        {
+          "type": "string",
+          "pattern": "^#[0-9a-fA-F]{6}$"
+        },
+        {
+          "type": "null"
+        }
+      ]
+    },
+    "palette": {
+      "type": "array",
+      "items": {
+        "type": "string",
+        "pattern": "^#[0-9a-fA-F]{6}$"
+      }
+    },
+    "category": {
+      "enum": [
+        "tops",
+        "knitwear",
+        "outerwear",
+        "tailoring",
+        "bottoms",
+        "denim",
+        "dresses",
+        "footwear",
+        "bags",
+        "accessories"
+      ]
+    },
+    "subcategory": {
+      "type": "string"
+    },
+    "garmentType": {
+      "enum": [
+        "shirt",
+        "blouse",
+        "t-shirt",
+        "tank-top",
+        "sweater",
+        "cardigan",
+        "hoodie",
+        "blazer",
+        "jacket",
+        "coat",
+        "trench",
+        "trousers",
+        "jeans",
+        "shorts",
+        "skirt",
+        "dress",
+        "sneakers",
+        "boots",
+        "loafers",
+        "heels",
+        "sandals",
+        "tote",
+        "crossbody",
+        "clutch",
+        "belt",
+        "scarf",
+        "sunglasses"
+      ]
+    },
+    "material": {
+      "enum": [
+        "cotton",
+        "poplin",
+        "oxford",
+        "linen",
+        "wool",
+        "merino",
+        "cashmere",
+        "denim",
+        "leather",
+        "suede",
+        "silk",
+        "viscose",
+        "polyester",
+        "nylon",
+        "canvas",
+        "knit-blend",
+        "mixed"
+      ]
+    },
+    "pattern": {
+      "enum": [
+        "solid",
+        "striped",
+        "checked",
+        "herringbone",
+        "floral",
+        "graphic",
+        "melange"
+      ]
+    },
+    "silhouette": {
+      "enum": [
+        "fitted",
+        "straight",
+        "relaxed",
+        "oversized",
+        "a-line",
+        "wide-leg",
+        "tapered",
+        "boxy"
+      ]
+    },
+    "fit": {
+      "enum": [
+        "slim",
+        "regular",
+        "relaxed",
+        "oversized"
+      ]
+    },
+    "style": {
+      "enum": [
+        "minimal",
+        "smart-casual",
+        "tailored",
+        "casual",
+        "street",
+        "boho",
+        "evening",
+        "sport"
+      ]
+    },
+    "season": {
+      "type": "array",
+      "items": {
+        "enum": [
+          "spring",
+          "summer",
+          "autumn",
+          "winter",
+          "all-season"
+        ]
+      }
+    },
+    "occasion": {
+      "type": "array",
+      "items": {
+        "enum": [
+          "office",
+          "casual",
+          "smart-casual",
+          "weekend",
+          "evening",
+          "event",
+          "travel",
+          "sport"
+        ]
+      }
+    },
+    "thermalWeight": {
+      "enum": [
+        1,
+        2,
+        3,
+        4,
+        5,
+        null
+      ]
+    },
+    "tags": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      },
+      "maxItems": 24
+    },
+    "image": {
+      "type": "string"
+    },
+    "thumbnail": {
+      "type": "string"
+    },
+    "modeledImage": {
+      "anyOf": [
+        {
+          "type": "string"
+        },
+        {
+          "type": "null"
+        }
+      ]
+    },
+    "importJobId": {
+      "type": "string"
+    },
+    "schemaVersion": {
+      "type": "string"
+    },
+    "fieldProvenance": {
+      "type": "object",
+      "additionalProperties": {
+        "enum": [
+          "unknown",
+          "not_applicable",
+          "ai_inferred",
+          "human_confirmed"
+        ]
+      }
+    },
+    "source": {
+      "type": "object"
+    },
+    "review": {
+      "type": "object"
+    },
+    "sku": {
+      "type": "string"
+    },
+    "brand": {
+      "type": "string"
+    },
+    "collection": {
+      "type": "string"
+    },
+    "price": {
+      "type": "number",
+      "minimum": 0
+    },
+    "currency": {
+      "type": "string",
+      "minLength": 3,
+      "maxLength": 3
+    },
+    "sizes": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      }
+    },
+    "stock": {
+      "type": "integer",
+      "minimum": 0
+    },
+    "productUrl": {
+      "type": "string"
+    }
   },
   "additionalProperties": true,
-  "$defs": {
-    "hex": { "type": "string", "pattern": "^#[0-9a-fA-F]{6}$" }
-  }
+  "$comment": "subcategory se valida contra category en validate.mjs (dependencia condicional que JSON Schema puro no expresa cómodamente)."
 }

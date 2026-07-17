@@ -20,8 +20,9 @@
       ],
       "reason": "Neutros cálidos con un solo acento verde: base tonal, peso visual abajo.",
       "setting": "patio de piedra clara con vegetación contenida",
+      "source": "fixture",
       "image": "outfit-images/studio-neutral-day.png",
-      "status": "accepted"
+      "status": "approved"
     },
     {
       "id": "ink-evening-layer",
@@ -40,8 +41,9 @@
       ],
       "reason": "La capa tinta enmarca el vestido terracota; una sola pieza saturada domina.",
       "setting": "callejón de galería al atardecer",
+      "source": "fixture",
       "image": "outfit-images/ink-evening-layer.png",
-      "status": "accepted"
+      "status": "rejected"
     }
   ]
 }

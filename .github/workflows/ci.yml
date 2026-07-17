@@ -1,0 +1,21 @@
+name: CI
+
+on:
+  push:
+    branches: ["**"]
+  pull_request:
+    branches: ["**"]
+
+jobs:
+  contracts-and-chain:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: "20"
+      # Sin dependencias externas: todo es Node nativo (node:test, sin ajv/zod).
+      - name: Contratos derivados sincronizados con la ontología
+        run: node tools/build-schemas.mjs --check
+      - name: Cadena reproducible + tests (fixtures deterministas, sin datos privados)
+        run: npm test

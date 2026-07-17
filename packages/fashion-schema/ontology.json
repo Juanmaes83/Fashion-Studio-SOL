@@ -1,6 +1,6 @@
 {
   "$id": "https://fashion-studio-sol.dev/schemas/ontology/v1",
-  "version": "1.0.0",
+  "version": "1.1.0",
   "description": "Ontología V1 de Fashion Studio SOL. Contrato canónico: las copias en wardrobe/public y en catálogos exportados se generan desde este archivo. Progresiva y extensible: los vocabularios pueden crecer, nunca reinterpretarse.",
   "provenance": ["unknown", "not_applicable", "ai_inferred", "human_confirmed"],
   "bodyArea": {
@@ -46,7 +46,7 @@
   "fit": { "values": ["slim", "regular", "relaxed", "oversized"] },
   "season": { "values": ["spring", "summer", "autumn", "winter", "all-season"] },
   "style": { "values": ["minimal", "smart-casual", "tailored", "casual", "street", "boho", "evening", "sport"] },
-  "occasion": { "values": ["office", "casual", "weekend", "evening", "event", "travel", "sport"] },
+  "occasion": { "values": ["office", "casual", "smart-casual", "weekend", "evening", "event", "travel", "sport"] },
   "thermalWeight": {
     "description": "Peso térmico 1 (muy ligero) a 5 (abrigo fuerte). Base para la futura inteligencia meteorológica.",
     "values": [1, 2, 3, 4, 5]

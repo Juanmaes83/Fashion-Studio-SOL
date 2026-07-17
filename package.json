@@ -3,6 +3,9 @@
   "private": true,
   "type": "module",
   "scripts": {
-    "test": "node --test \"tests/unit/**/*.test.mjs\""
+    "pretest": "node tools/prepare-test-data.mjs",
+    "test": "node --test \"tests/unit/**/*.test.mjs\"",
+    "build:schemas": "node tools/build-schemas.mjs",
+    "check:schemas": "node tools/build-schemas.mjs --check"
   }
 }
