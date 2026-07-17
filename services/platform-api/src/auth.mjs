@@ -8,7 +8,14 @@ function equalSecret(a, b) {
   return timingSafeEqual(left, right);
 }
 
-export function requireAdmin(req, expectedToken) {
+function isLoopback(req) {
+  const host = String(req.headers.host || "").split(":")[0].toLowerCase();
+  const remote = String(req.socket?.remoteAddress || "");
+  return host === "localhost" || host === "127.0.0.1" || host === "::1" || remote === "127.0.0.1" || remote === "::1" || remote === "::ffff:127.0.0.1";
+}
+
+export function requireAdmin(req, expectedToken, { allowLocalDemo = false } = {}) {
+  if (allowLocalDemo && isLoopback(req)) return;
   if (!expectedToken) throw new ApiError(503, "AUTH_NOT_CONFIGURED", "Admin authentication is not configured");
   const header = req.headers.authorization || "";
   const token = header.startsWith("Bearer ") ? header.slice(7) : "";
