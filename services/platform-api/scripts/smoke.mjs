@@ -13,63 +13,68 @@ async function call(path, { method="GET", body, auth=false, headers={} }={}) {
     body: body ? JSON.stringify(body) : undefined
   });
   const payload = await response.json();
+  console.log(JSON.stringify({ method, path, status: response.status, payload }));
   return { response, payload };
 }
+const expectStatus = (result, expected) => assert.equal(result.response.status, expected, JSON.stringify(result.payload));
 
+console.log('STAGE seed');
 await pool.query("INSERT INTO workspaces(id,slug,name) VALUES('ws-sol','sol','SOL')");
 await pool.query("INSERT INTO brands(id,workspace_id,slug,name) VALUES('brand-sol','ws-sol','sol','SOL')");
 await pool.query("INSERT INTO projects(id,workspace_id,brand_id,slug,name) VALUES('project-sol','ws-sol','brand-sol','sol-store','SOL Store')");
 
-assert.equal((await call('/health')).response.status, 200);
+console.log('STAGE health-auth');
+expectStatus(await call('/health'), 200);
 assert.equal((await call('/ready')).payload.database, 'ok');
 assert.equal((await call('/version')).payload.contract, 'phase-2b/v1');
-assert.equal((await call('/admin/projects/project-sol/garments')).response.status, 401);
+expectStatus(await call('/admin/projects/project-sol/garments'), 401);
 
+console.log('STAGE garments');
 const shirt = { id:'shirt-white', name:'Camisa blanca', bodyArea:'upperbody', category:'tops', garmentType:'shirt', color:'#ffffff', season:['all-season'], occasion:['office'], tags:['core'] };
 let result = await call('/admin/projects/project-sol/garments', { method:'POST', auth:true, body:shirt });
-assert.equal(result.response.status, 201, JSON.stringify(result.payload));
+expectStatus(result, 201);
 assert.equal(result.payload.version, 1);
-
 const trousers = { id:'trousers-black', name:'Pantalón negro', bodyArea:'lowerbody', category:'bottoms', garmentType:'trousers', color:'#000000', season:['all-season'], occasion:['office'] };
-result = await call('/admin/projects/project-sol/garments', { method:'POST', auth:true, body:trousers });
-assert.equal(result.response.status, 201, JSON.stringify(result.payload));
-
+expectStatus(await call('/admin/projects/project-sol/garments', { method:'POST', auth:true, body:trousers }), 201);
 result = await call('/admin/projects/project-sol/garments/shirt-white', { method:'PATCH', auth:true, headers:{'if-match':'1'}, body:{ name:'Camisa blanca premium' } });
-assert.equal(result.response.status, 200, JSON.stringify(result.payload));
+expectStatus(result, 200);
 assert.equal(result.payload.version, 2);
-assert.equal((await call('/admin/projects/project-sol/garments/shirt-white', { method:'PATCH', auth:true, headers:{'if-match':'1'}, body:{ name:'Sobrescritura' } })).response.status, 409);
+expectStatus(await call('/admin/projects/project-sol/garments/shirt-white', { method:'PATCH', auth:true, headers:{'if-match':'1'}, body:{ name:'Sobrescritura' } }), 409);
 
+console.log('STAGE outfit');
 const outfit = { id:'office-core', name:'Office Core', status:'published', style:'smart-casual', occasion:['office'], season:['all-season'], garmentIds:['shirt-white','trousers-black'] };
 result = await call('/admin/projects/project-sol/outfits', { method:'POST', auth:true, body:outfit });
-assert.equal(result.response.status, 201, JSON.stringify(result.payload));
+expectStatus(result, 201);
 assert.equal(result.payload.status, 'draft');
-assert.equal((await call('/admin/projects/project-sol/outfits/office-core/transitions', { method:'POST', auth:true, body:{action:'publish'} })).response.status, 409);
+expectStatus(await call('/admin/projects/project-sol/outfits/office-core/transitions', { method:'POST', auth:true, body:{action:'publish'} }), 409);
 for (const action of ['submit','approve','publish']) {
   result = await call('/admin/projects/project-sol/outfits/office-core/transitions', { method:'POST', auth:true, body:{action} });
-  assert.equal(result.response.status, 200, JSON.stringify(result.payload));
+  expectStatus(result, 200);
 }
 assert.equal(result.payload.status, 'published');
 
+console.log('STAGE publication');
 result = await call('/admin/projects/project-sol/publications', { method:'POST', auth:true });
-assert.equal(result.response.status, 201, JSON.stringify(result.payload));
+expectStatus(result, 201);
 const publicationId = result.payload.id;
-
 result = await call('/public/projects/sol-store/catalog');
-assert.equal(result.response.status, 200);
+expectStatus(result, 200);
 assert.equal(result.payload.garments.length, 2);
 assert.equal(result.payload.outfits[0].id, 'office-core');
 
+console.log('STAGE saved-look');
 result = await call('/public/projects/sol-store/saved-looks', { method:'POST', body:{ garmentIds:['shirt-white','trousers-black'], outfitId:'office-core' } });
-assert.equal(result.response.status, 201, JSON.stringify(result.payload));
+expectStatus(result, 201);
 assert.ok(result.payload.token);
 const savedLookId = result.payload.id;
 const savedToken = result.payload.token;
 assert.equal((await call(`/public/saved-looks/${savedToken}`)).payload.garment_ids.length, 2);
-assert.equal((await call(`/admin/projects/project-sol/saved-looks/${savedLookId}`, { method:'DELETE', auth:true })).response.status, 200);
-assert.equal((await call(`/public/saved-looks/${savedToken}`)).response.status, 410);
+expectStatus(await call(`/admin/projects/project-sol/saved-looks/${savedLookId}`, { method:'DELETE', auth:true }), 200);
+expectStatus(await call(`/public/saved-looks/${savedToken}`), 410);
 
-assert.equal((await call(`/admin/projects/project-sol/publications/${publicationId}/withdraw`, { method:'POST', auth:true })).response.status, 200);
-assert.equal((await call('/public/projects/sol-store/catalog')).response.status, 404);
+console.log('STAGE withdraw');
+expectStatus(await call(`/admin/projects/project-sol/publications/${publicationId}/withdraw`, { method:'POST', auth:true }), 200);
+expectStatus(await call('/public/projects/sol-store/catalog'), 404);
 
 await pool.end();
 console.log('Phase 2B API smoke: PASS');
