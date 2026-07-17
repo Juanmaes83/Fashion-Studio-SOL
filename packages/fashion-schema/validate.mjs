@@ -84,9 +84,46 @@ export function validateOutfit(o, garmentsById) {
   for (const f of ["occasion", "season"]) {
     (o[f] || []).forEach(v => { if (!ONTOLOGY[f].values.includes(v)) errors.push(`${where}: ${f} fuera de vocabulario (${v})`); });
   }
+  // style es un valor único (nullable) del vocabulario canónico — misma interpretación
+  // que el JSON Schema derivado (outfit.schema.json).
+  if (o.style != null && o.style !== "" && !ONTOLOGY.style.values.includes(o.style)) {
+    errors.push(`${where}: style fuera de vocabulario (${o.style})`);
+  }
+  if (o.tags != null && !Array.isArray(o.tags)) errors.push(`${where}: tags debe ser array`);
   return { ok: !errors.length, errors };
 }
 
 export function isPublishable(outfit) {
   return ONTOLOGY.outfitPublishable.includes(outfit.status);
 }
+
+/* ---------------- Máquina de estados de outfit (única e ineludible) ----------------
+   Creación/importación SIEMPRE nacen en `draft`: ninguna vía puede parir un outfit
+   directamente approved o published. La única forma de cambiar de estado es
+   reviewTransition, y `publish` exige estado `approved`. */
+
+export const OUTFIT_INITIAL_STATUS = "draft";
+
+// Verbo de revisión → estado destino, con guardas.
+const REVIEW_VERBS = {
+  submit: { to: "review", from: ["draft", "rejected"] },
+  approve: { to: "approved", from: ["review", "draft", "rejected"] },
+  reject: { to: "rejected", from: ["draft", "review", "approved", "published"] },
+  draft: { to: "draft", from: ["review", "approved", "rejected", "published"] },
+  publish: { to: "published", from: ["approved"] }
+};
+
+// Estado con el que nace un outfit, ignorando cualquier status entrante (anti-bypass).
+export function sanitizeNewOutfitStatus() {
+  return OUTFIT_INITIAL_STATUS;
+}
+
+// Transición válida o null. `current` = estado actual, `verb` = acción de revisión.
+export function reviewTransition(current, verb) {
+  const rule = REVIEW_VERBS[verb];
+  if (!rule) return { ok: false, error: `acción inválida: ${verb}` };
+  if (!rule.from.includes(current)) return { ok: false, error: `no se puede '${verb}' desde '${current}'` };
+  return { ok: true, status: rule.to };
+}
+
+export const REVIEW_ACTIONS = Object.keys(REVIEW_VERBS);

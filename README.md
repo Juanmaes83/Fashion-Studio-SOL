@@ -1236,23 +1236,22 @@ research/tryon-benchmark
 
 ## 20. Próxima acción recomendada
 
-Fases 3 y 4 (misión en curso) sobre la rama:
+Fases 0, 1, 3 y 4 están completadas y consolidadas (contrato canónico único,
+máquina de estados protegida, CI verde en los tres repos; ver
+`docs/CONSOLIDATION-3-4.md`). Los PR permanecen en draft a la espera de aprobación.
 
-```text
-foundation/wardrobe-mirrora-integration
-```
+**Siguiente decisión real del roadmap: Fase 2 — Persistencia y pipeline profesional.**
+Es el desbloqueo pendiente antes de cualquier SaaS. Decisión a tomar:
 
-Y añadir:
+1. Elegir base de datos y storage (el roadmap propone PostgreSQL/Supabase + storage
+   con URLs firmadas) manteniendo estables los IDs y el contrato `fashion-schema`.
+2. Migrar la fuente de verdad de JSON local (`wardrobe/data`) y localStorage
+   (MIRRORA) a persistencia compartida **sin cambiar la semántica** ya consolidada.
+3. Extraer la Studio API y el pipeline de import a un servicio desplegable
+   (hoy viven en el dev server de Vite).
 
-1. `docs/THIRD_PARTY.md`.
-2. `docs/PRODUCT.md`.
-3. `docs/ARCHITECTURE.md`.
-4. `docs/ROADMAP.md`.
-5. ADR: integración Wardrobe + MIRRORA.
-6. Tabla definitiva de repositorios, upstream, licencia, uso y decisión.
-7. Criterios de aceptación del primer vertical slice.
-
-Después comenzará la integración técnica.
+En paralelo, investigación previa de Fase 5 (Website Builder): inventariar y comparar
+los builders existentes en los repositorios del propietario antes de elegir base.
 
 ---
 

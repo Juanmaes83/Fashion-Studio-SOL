@@ -6,7 +6,7 @@ import { execFileSync } from "node:child_process";
 import os from "node:os";
 import path from "node:path";
 import { fileURLToPath } from "node:url";
-import { validateGarment, validateOutfit, isPublishable, ONTOLOGY } from "../../packages/fashion-schema/validate.mjs";
+import { validateGarment, validateOutfit, isPublishable, ONTOLOGY, sanitizeNewOutfitStatus, reviewTransition } from "../../packages/fashion-schema/validate.mjs";
 
 // Rutas SIEMPRE repo-relativas — nada personal. Los fixtures los crea
 // `node tools/prepare-test-data.mjs` (lo ejecuta `npm test` antes que estos tests).
@@ -76,6 +76,37 @@ test("solo approved/published son publicables", () => {
   assert.equal(isPublishable({ status: "approved" }), true);
   assert.equal(isPublishable({ status: "published" }), true);
   for (const s of ["draft", "review", "rejected"]) assert.equal(isPublishable({ status: s }), false);
+});
+
+test("style de outfit fuera de vocabulario se rechaza (schema == validador)", () => {
+  assert.match(validateOutfit({ ...outfit, style: "chandalero" }, byId).errors.join(), /style fuera de vocabulario/);
+  assert.equal(validateOutfit({ ...outfit, style: "tailored" }, byId).ok, true);
+});
+
+/* ---------------- Máquina de estados (anti-bypass) ---------------- */
+
+test("crear/importar SIEMPRE nace en draft, ignorando el status pedido", () => {
+  for (const req of ["published", "approved", "review", undefined, "loquesea"]) {
+    assert.equal(sanitizeNewOutfitStatus(req), "draft");
+  }
+});
+
+test("publish exige estado approved (no se elude)", () => {
+  assert.equal(reviewTransition("draft", "publish").ok, false);
+  assert.equal(reviewTransition("review", "publish").ok, false);
+  assert.equal(reviewTransition("rejected", "publish").ok, false);
+  assert.deepEqual(reviewTransition("approved", "publish"), { ok: true, status: "published" });
+});
+
+test("flujo draft → review/approved → published funciona", () => {
+  assert.equal(reviewTransition("draft", "submit").status, "review");
+  assert.equal(reviewTransition("draft", "approve").status, "approved");
+  assert.equal(reviewTransition("review", "approve").status, "approved");
+  assert.equal(reviewTransition("approved", "publish").status, "published");
+});
+
+test("verbo inválido se rechaza", () => {
+  assert.equal(reviewTransition("draft", "teleport").ok, false);
 });
 
 /* ---------------- Contrato único: schemas derivados ---------------- */
