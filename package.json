@@ -8,7 +8,7 @@
     "build:schemas": "node tools/build-schemas.mjs",
     "check:schemas": "node tools/build-schemas.mjs --check",
     "api:start": "node services/platform-api/src/server.mjs",
-    "api:smoke": "node services/platform-api/test/smoke.mjs"
+    "api:smoke": "node services/platform-api/scripts/smoke.mjs"
   },
   "dependencies": {
     "pg": "^8.16.3"
