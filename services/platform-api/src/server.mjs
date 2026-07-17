@@ -1,16 +1,24 @@
 import http from "node:http";
 import { createPool } from "./db.mjs";
 import { createApp } from "./app.mjs";
+import { createStorage } from "./storage.mjs";
 
 const port = Number(process.env.PORT || 8787);
 const pool = createPool(process.env.DATABASE_URL);
+const storage = createStorage({
+  root: process.env.STORAGE_ROOT || "./tmp/platform-storage",
+  signingSecret: process.env.STORAGE_SIGNING_SECRET
+});
 const allowedOrigins = (process.env.ALLOWED_ORIGINS || "").split(",").map(v => v.trim()).filter(Boolean);
 const app = createApp({
   pool,
+  storage,
   adminToken: process.env.ADMIN_API_TOKEN,
   version: process.env.APP_VERSION || process.env.GITHUB_SHA || "dev",
   allowedOrigins,
-  maxBodyBytes: Number(process.env.MAX_BODY_BYTES || 262144)
+  maxBodyBytes: Number(process.env.MAX_BODY_BYTES || 262144),
+  maxAssetBytes: Number(process.env.MAX_ASSET_BYTES || 15000000),
+  uploadTtlSeconds: Number(process.env.UPLOAD_TTL_SECONDS || 900)
 });
 
 const server = http.createServer(app);
@@ -18,10 +26,7 @@ server.listen(port, "0.0.0.0", () => console.log(JSON.stringify({ level: "info",
 
 async function shutdown(signal) {
   console.log(JSON.stringify({ level: "info", event: "api_stopping", signal }));
-  server.close(async () => {
-    await pool.end();
-    process.exit(0);
-  });
+  server.close(async () => { await pool.end(); process.exit(0); });
   setTimeout(() => process.exit(1), 10000).unref();
 }
 process.on("SIGTERM", () => shutdown("SIGTERM"));
