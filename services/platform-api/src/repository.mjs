@@ -103,7 +103,28 @@ export async function createPublication(pool, projectId, publishedBy="admin") {
       const validation = validateOutfit(outfit, garmentMap);
       if (!validation.ok) throw new ApiError(422,"PUBLICATION_INVALID","Publication contains invalid outfits",validation.errors);
     }
-    const snapshot = { schemaVersion: "catalog/v1", projectId, garments, outfits, generatedAt: new Date().toISOString() };
+    const assetRows = (await client.query(`SELECT id,garment_id,outfit_id,kind,mime_type,width,height,checksum_sha256
+      FROM assets WHERE project_id=$1 AND status='ready' AND visibility='public' ORDER BY created_at,id`, [projectId])).rows;
+    const assets = assetRows.map(row => ({
+      id: row.id,
+      garmentId: row.garment_id,
+      outfitId: row.outfit_id,
+      kind: row.kind,
+      mimeType: row.mime_type,
+      width: row.width,
+      height: row.height,
+      checksumSha256: row.checksum_sha256,
+      url: `/public/assets/${row.id}`
+    }));
+    const byGarment = new Map();
+    const byOutfit = new Map();
+    for (const asset of assets) {
+      if (asset.garmentId) (byGarment.get(asset.garmentId) || byGarment.set(asset.garmentId, []).get(asset.garmentId)).push(asset);
+      if (asset.outfitId) (byOutfit.get(asset.outfitId) || byOutfit.set(asset.outfitId, []).get(asset.outfitId)).push(asset);
+    }
+    const publishedGarments = garments.map(g => ({ ...g, assets: byGarment.get(g.id) || [] }));
+    const publishedOutfits = outfits.map(o => ({ ...o, assets: byOutfit.get(o.id) || [] }));
+    const snapshot = { schemaVersion: "catalog/v2", projectId, garments: publishedGarments, outfits: publishedOutfits, assets, generatedAt: new Date().toISOString() };
     const checksum = createHash("sha256").update(JSON.stringify(snapshot)).digest("hex");
     await client.query("UPDATE publications SET status='withdrawn',withdrawn_at=now() WHERE project_id=$1 AND status='active'",[projectId]);
     const version = Number((await client.query("SELECT COALESCE(MAX(version),0)+1 value FROM publications WHERE project_id=$1",[projectId])).rows[0].value);
@@ -130,19 +151,33 @@ export async function createSavedLook(pool, projectSlug, input) {
   const catalog = await getPublicCatalog(pool, projectSlug);
   const allowed = new Set(catalog.garments.map(g => g.id));
   if (!Array.isArray(input.garmentIds) || !input.garmentIds.length || input.garmentIds.some(id => !allowed.has(id))) throw new ApiError(422,"SAVED_LOOK_INVALID","SavedLook contains unavailable garments");
+  if (input.outfitId && !catalog.outfits.some(o => o.id === input.outfitId)) throw new ApiError(422,"SAVED_LOOK_INVALID","SavedLook outfit is unavailable");
   const token = randomBytes(32).toString("base64url");
   const expiresAt = input.expiresAt || null;
   const row = (await pool.query("INSERT INTO saved_looks(project_id,public_token_hash,outfit_id,garment_ids,expires_at) VALUES($1,$2,$3,$4,$5) RETURNING id,expires_at,created_at",[projectId,hashToken(token),input.outfitId||null,asJson(input.garmentIds),expiresAt])).rows[0];
-  return { ...row, token };
+  return { ...row, token, url: `/public/saved-looks/${token}` };
 }
 
 export async function getSavedLook(pool, token) {
-  const result = await pool.query("SELECT id,project_id,outfit_id,garment_ids,expires_at,revoked_at,created_at FROM saved_looks WHERE public_token_hash=$1",[hashToken(token)]);
+  const result = await pool.query(`SELECT sl.id,sl.project_id,pr.slug project_slug,sl.outfit_id,sl.garment_ids,sl.expires_at,sl.revoked_at,sl.created_at
+    FROM saved_looks sl JOIN projects pr ON pr.id=sl.project_id WHERE sl.public_token_hash=$1`,[hashToken(token)]);
   if (!result.rowCount) throw new ApiError(404,"SAVED_LOOK_NOT_FOUND","SavedLook not found");
   const row = result.rows[0];
   if (row.revoked_at || (row.expires_at && new Date(row.expires_at) <= new Date())) throw new ApiError(410,"SAVED_LOOK_UNAVAILABLE","SavedLook is no longer available");
   await pool.query("UPDATE saved_looks SET last_accessed_at=now() WHERE id=$1",[row.id]);
-  return row;
+  const catalog = await getPublicCatalog(pool, row.project_slug);
+  const garmentSet = new Set(row.garment_ids || []);
+  return {
+    id: row.id,
+    projectId: row.project_id,
+    projectSlug: row.project_slug,
+    outfitId: row.outfit_id,
+    garmentIds: row.garment_ids,
+    expiresAt: row.expires_at,
+    createdAt: row.created_at,
+    garments: catalog.garments.filter(g => garmentSet.has(g.id)),
+    outfit: row.outfit_id ? catalog.outfits.find(o => o.id === row.outfit_id) || null : null
+  };
 }
 
 export async function revokeSavedLook(pool, projectId, id) {
