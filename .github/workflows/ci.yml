@@ -13,7 +13,7 @@ jobs:
       - uses: actions/checkout@v4
       - uses: actions/setup-node@v4
         with:
-          node-version: "20"
+          node-version: "22"
       # Sin dependencias externas: todo es Node nativo (node:test, sin ajv/zod).
       - name: Contratos derivados sincronizados con la ontología
         run: node tools/build-schemas.mjs --check
