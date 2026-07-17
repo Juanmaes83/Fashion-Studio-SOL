@@ -4,6 +4,7 @@ import { withTransaction } from "./db.mjs";
 
 const ALLOWED_MIME = new Set(["image/png", "image/jpeg", "image/webp"]);
 const ALLOWED_KIND = new Set(["source", "crop", "reconstruction", "editorial", "flatlay", "thumbnail"]);
+export const PUBLIC_ASSET_KINDS = new Set(["editorial", "flatlay", "thumbnail"]);
 const SHA256 = /^[0-9a-f]{64}$/i;
 const SAFE_FILENAME = /^[^\\/\u0000-\u001f\u007f]{1,255}$/;
 
@@ -103,6 +104,9 @@ export async function promoteAsset(pool, storage, projectId, assetId, input, act
     if (!result.rowCount) throw new ApiError(404, "ASSET_NOT_FOUND", "Asset not found");
     const row = result.rows[0];
     if (row.status !== "ready") throw new ApiError(409, "ASSET_NOT_READY", "Only ready assets can be promoted");
+    if (!PUBLIC_ASSET_KINDS.has(row.kind)) {
+      throw new ApiError(422, "ASSET_NOT_PUBLISHABLE", `Asset kind '${row.kind}' is internal and cannot be published`);
+    }
     if (row.visibility === "public") return publicRow(row);
     const publicKey = storage.makeKey({ projectId, assetId, visibility: "public", filename: row.original_filename });
     await storage.move(row.storage_key, publicKey);
