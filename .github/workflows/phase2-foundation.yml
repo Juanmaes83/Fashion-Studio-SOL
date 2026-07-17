@@ -1,0 +1,22 @@
+name: Phase 2 Foundation
+
+on:
+  push:
+    branches: ["phase-2/**"]
+  pull_request:
+    branches: ["main"]
+
+jobs:
+  postgres-foundation:
+    runs-on: ubuntu-latest
+    services:
+      postgres:
+        image: postgres:16
+        env:
+          POSTGRES_USER: fashion
+          POSTGRES_PASSWORD: fashion
+          POSTGRES_DB: fashion_studio
+        ports:
+          - 5432:5432
+        options: >-
+          --health-c
