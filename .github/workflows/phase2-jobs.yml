@@ -60,15 +60,25 @@ jobs:
       - name: Seed API domain
         run: npm run api:smoke
       - name: Test jobs worker recovery and operations panel
-        run: npm run jobs:smoke
+        shell: bash
+        run: |
+          set +e
+          npm run jobs:smoke > /tmp/phase2d-jobs-smoke.log 2>&1
+          code=$?
+          cat /tmp/phase2d-jobs-smoke.log
+          exit $code
       - name: Collect diagnostics
         if: always()
-        run: cp /tmp/platform-api-jobs.log ./platform-api-jobs.log || true
+        run: |
+          cp /tmp/platform-api-jobs.log ./platform-api-jobs.log || true
+          cp /tmp/phase2d-jobs-smoke.log ./phase2d-jobs-smoke.log || true
       - uses: actions/upload-artifact@v4
         if: always()
         with:
           name: phase2d-jobs-diagnostics
-          path: platform-api-jobs.log
+          path: |
+            platform-api-jobs.log
+            phase2d-jobs-smoke.log
           retention-days: 3
       - name: Stop API
         if: always()
