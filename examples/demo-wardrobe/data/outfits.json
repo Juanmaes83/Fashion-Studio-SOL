@@ -1,0 +1,47 @@
+{
+  "version": 1,
+  "outfits": [
+    {
+      "id": "studio-neutral-day",
+      "name": "Studio Neutral Day",
+      "occasion": [
+        "casual",
+        "office"
+      ],
+      "season": [
+        "spring",
+        "autumn"
+      ],
+      "garmentIds": [
+        "import-ivory-boxy-tee",
+        "import-camel-wide-trousers",
+        "import-cloud-court-sneakers",
+        "import-olive-canvas-tote"
+      ],
+      "reason": "Neutros cálidos con un solo acento verde: base tonal, peso visual abajo.",
+      "setting": "patio de piedra clara con vegetación contenida",
+      "image": "outfit-images/studio-neutral-day.png",
+      "status": "accepted"
+    },
+    {
+      "id": "ink-evening-layer",
+      "name": "Ink Evening Layer",
+      "occasion": [
+        "evening",
+        "smart-casual"
+      ],
+      "season": [
+        "autumn"
+      ],
+      "garmentIds": [
+        "import-terracotta-slip-dress",
+        "import-ink-lounge-jacket",
+        "import-cloud-court-sneakers"
+      ],
+      "reason": "La capa tinta enmarca el vestido terracota; una sola pieza saturada domina.",
+      "setting": "callejón de galería al atardecer",
+      "image": "outfit-images/ink-evening-layer.png",
+      "status": "accepted"
+    }
+  ]
+}

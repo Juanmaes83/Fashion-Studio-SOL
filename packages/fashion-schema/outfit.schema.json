@@ -1,0 +1,24 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://fashion-studio-sol.dev/schemas/outfit/v0.1",
+  "title": "Outfit",
+  "description": "Look/outfit. Núcleo = manifiesto real de la skill generate-outfits de wardrobe (data/outfits.json), extendido con la entidad mínima del README maestro §8.",
+  "type": "object",
+  "required": ["id", "name", "garmentIds"],
+  "properties": {
+    "id": { "type": "string", "pattern": "^[a-z0-9]+(?:-[a-z0-9]+)*$" },
+    "name": { "type": "string", "minLength": 1 },
+    "garmentIds": { "type": "array", "items": { "type": "string" }, "minItems": 1 },
+    "occasion": { "type": "array", "items": { "type": "string" } },
+    "season": { "type": "array", "items": { "enum": ["spring", "summer", "autumn", "winter"] } },
+    "description": { "type": "string" },
+    "reason": { "type": "string" },
+    "setting": { "type": "string" },
+    "tags": { "type": "array", "items": { "type": "string" } },
+    "image": { "type": "string" },
+    "modeledImage": { "type": "string" },
+    "flatLayImage": { "type": "string" },
+    "status": { "enum": ["planned", "generated", "draft", "review", "accepted", "approved", "failed"] }
+  },
+  "additionalProperties": true
+}

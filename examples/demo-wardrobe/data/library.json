@@ -1,0 +1,118 @@
+[
+  {
+    "id": "import-ivory-boxy-tee",
+    "name": "Ivory Boxy Tee",
+    "part": "upperbody",
+    "color": "#ece5d8",
+    "secondaryColor": "#b8ab90",
+    "palette": [
+      "#ece5d8",
+      "#b8ab90"
+    ],
+    "tags": [
+      "basic",
+      "boxy",
+      "cotton"
+    ],
+    "image": "/api/import/library/import-ivory-boxy-tee-garment.png",
+    "thumbnail": "/api/import/library/import-ivory-boxy-tee-garment.png",
+    "modeledImage": null,
+    "importJobId": "ivory-boxy-tee"
+  },
+  {
+    "id": "import-ink-lounge-jacket",
+    "name": "Ink Lounge Jacket",
+    "part": "wholebody_up",
+    "color": "#23211f",
+    "secondaryColor": "#b08d4f",
+    "palette": [
+      "#23211f",
+      "#b08d4f"
+    ],
+    "tags": [
+      "layered",
+      "smart-casual"
+    ],
+    "image": "/api/import/library/import-ink-lounge-jacket-garment.png",
+    "thumbnail": "/api/import/library/import-ink-lounge-jacket-garment.png",
+    "modeledImage": null,
+    "importJobId": "ink-lounge-jacket"
+  },
+  {
+    "id": "import-camel-wide-trousers",
+    "name": "Camel Wide Trousers",
+    "part": "lowerbody",
+    "color": "#b3814a",
+    "secondaryColor": "#6e5124",
+    "palette": [
+      "#b3814a",
+      "#6e5124"
+    ],
+    "tags": [
+      "wide-leg",
+      "tailored"
+    ],
+    "image": "/api/import/library/import-camel-wide-trousers-garment.png",
+    "thumbnail": "/api/import/library/import-camel-wide-trousers-garment.png",
+    "modeledImage": null,
+    "importJobId": "camel-wide-trousers"
+  },
+  {
+    "id": "import-terracotta-slip-dress",
+    "name": "Terracotta Slip Dress",
+    "part": "upperbody",
+    "color": "#b0654f",
+    "secondaryColor": "#7a3f2e",
+    "palette": [
+      "#b0654f",
+      "#7a3f2e"
+    ],
+    "tags": [
+      "dress",
+      "evening"
+    ],
+    "image": "/api/import/library/import-terracotta-slip-dress-garment.png",
+    "thumbnail": "/api/import/library/import-terracotta-slip-dress-garment.png",
+    "modeledImage": null,
+    "importJobId": "terracotta-slip-dress"
+  },
+  {
+    "id": "import-cloud-court-sneakers",
+    "name": "Cloud Court Sneakers",
+    "part": "shoes",
+    "color": "#f4efe7",
+    "secondaryColor": "#9aa08f",
+    "palette": [
+      "#f4efe7",
+      "#9aa08f"
+    ],
+    "tags": [
+      "sneakers",
+      "street"
+    ],
+    "image": "/api/import/library/import-cloud-court-sneakers-garment.png",
+    "thumbnail": "/api/import/library/import-cloud-court-sneakers-garment.png",
+    "modeledImage": null,
+    "importJobId": "cloud-court-sneakers"
+  },
+  {
+    "id": "import-olive-canvas-tote",
+    "name": "Olive Canvas Tote",
+    "part": "accessories_up",
+    "color": "#4a5d4a",
+    "secondaryColor": "#23211f",
+    "palette": [
+      "#4a5d4a",
+      "#23211f"
+    ],
+    "tags": [
+      "bag",
+      "canvas",
+      "daily"
+    ],
+    "image": "/api/import/library/import-olive-canvas-tote-garment.png",
+    "thumbnail": "/api/import/library/import-olive-canvas-tote-garment.png",
+    "modeledImage": null,
+    "importJobId": "olive-canvas-tote"
+  }
+]

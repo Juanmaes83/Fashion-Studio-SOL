@@ -1,0 +1,44 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://fashion-studio-sol.dev/schemas/garment/v0.1",
+  "title": "Garment",
+  "description": "Prenda del catálogo. Núcleo = contrato real de wardrobe data/library.json; ontología V1 del README maestro como campos opcionales.",
+  "type": "object",
+  "required": ["id", "name", "part", "color", "image"],
+  "properties": {
+    "id": { "type": "string", "minLength": 1 },
+    "name": { "type": "string", "minLength": 1, "maxLength": 120 },
+    "part": { "enum": ["upperbody", "wholebody_up", "lowerbody", "accessories_up", "shoes"] },
+    "color": { "$ref": "#/$defs/hex" },
+    "secondaryColor": { "anyOf": [{ "$ref": "#/$defs/hex" }, { "type": "null" }] },
+    "palette": { "type": "array", "items": { "$ref": "#/$defs/hex" } },
+    "tags": { "type": "array", "items": { "type": "string" }, "maxItems": 12 },
+    "image": { "type": "string", "minLength": 1 },
+    "thumbnail": { "type": "string" },
+    "modeledImage": { "anyOf": [{ "type": "string" }, { "type": "null" }] },
+    "importJobId": { "type": "string" },
+
+    "category": { "type": "string" },
+    "subcategory": { "type": "string" },
+    "material": { "type": "string" },
+    "pattern": { "type": "string" },
+    "silhouette": { "type": "string" },
+    "fit": { "type": "string" },
+    "season": { "type": "array", "items": { "enum": ["spring", "summer", "autumn", "winter"] } },
+    "style": { "type": "array", "items": { "type": "string" } },
+    "occasion": { "type": "array", "items": { "type": "string" } },
+    "thermalWeight": { "enum": ["light", "mid", "heavy", null] },
+
+    "sku": { "type": "string" },
+    "brand": { "type": "string" },
+    "price": { "type": "number", "minimum": 0 },
+    "currency": { "type": "string", "minLength": 3, "maxLength": 3 },
+    "sizes": { "type": "array", "items": { "type": "string" } },
+    "stock": { "type": "integer", "minimum": 0 },
+    "productUrl": { "type": "string" }
+  },
+  "additionalProperties": true,
+  "$defs": {
+    "hex": { "type": "string", "pattern": "^#[0-9a-fA-F]{6}$" }
+  }
+}
