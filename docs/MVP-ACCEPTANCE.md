@@ -22,9 +22,11 @@ catálogo comercial real (fotos de marca) = pendiente; validación con cliente =
 | 11 | Medir interacción | Funnel local: `seleccion`, `look_guardado`, `carrito_click`… | ✅ existente (endpoint remoto = Fase 2) |
 
 **Slice técnico completo demostrado** (2026-07-17) con activos sintéticos procesados
-por el pipeline real. Defectos conocidos no bloqueantes: el blazer se clasificó
-`upperbody` (debería ser `wholebody_up`); las imágenes exportadas van a tamaño
-completo (1-2 MB) y conviene redimensionarlas en el exportador antes de producción.
+por el pipeline real. El blazer, que la detección clasificó `upperbody`, fue
+corregido a `wholebody_up` en la fuente (`wardrobe/data/library.json`) y propagado
+por re-export (2026-07-17). Defecto conocido no bloqueante: las imágenes exportadas
+van a tamaño completo (1-2 MB); conviene redimensionarlas en el exportador antes
+de producción.
 
 **Fuera del MVP (no criterios):** SaaS, facturación, clima, telas, vídeo try-on,
 simulación de fit.
