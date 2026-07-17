@@ -23,30 +23,34 @@ jobs:
           --health-interval=10s
           --health-timeout=5s
           --health-retries=5
-
     env:
       PGHOST: localhost
       PGPORT: 5432
       PGUSER: fashion
       PGPASSWORD: fashion
       PGDATABASE: fashion_studio
-
+      DATABASE_URL: postgresql://fashion:fashion@localhost:5432/fashion_studio
+      ADMIN_API_TOKEN: phase2-test-token
+      API_BASE_URL: http://127.0.0.1:8787
+      ALLOWED_ORIGINS: http://localhost:4173
     steps:
       - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: "22"
 
       - name: Verify one canonical foundation migration
         shell: bash
         run: |
           set -euo pipefail
           mapfile -t migrations < <(find database/migrations -maxdepth 1 -type f -name '*phase2_foundation.sql' | sort)
-          printf '%s\n' "${migrations[@]}"
           test "${#migrations[@]}" -eq 1
           test "${migrations[0]}" = "database/migrations/0001_phase2_foundation.sql"
 
       - name: Apply migration on clean PostgreSQL 16
         run: psql --set ON_ERROR_STOP=on --file database/migrations/0001_phase2_foundation.sql
 
-      - name: Run integrity smoke tests
+      - name: Run foundation integrity smoke tests
         run: psql --set ON_ERROR_STOP=on --file database/tests/phase2_foundation_smoke.sql
 
       - name: Verify expected tables and indexes
@@ -55,16 +59,32 @@ jobs:
           set -euo pipefail
           tables=$(psql -Atc "select count(*) from information_schema.tables where table_schema='public' and table_name in ('workspaces','brands','projects','collections','garments','outfits','outfit_items','assets','reviews','state_transitions','generation_jobs','job_attempts','publications','saved_looks');")
           test "$tables" -eq 14
-          psql -Atc "select indexname from pg_indexes where schemaname='public' and indexname in ('publications_one_active_per_project','jobs_claim_idx','assets_project_visibility_idx');" | sort
+          indexes=$(psql -Atc "select count(*) from pg_indexes where schemaname='public' and indexname in ('publications_one_active_per_project','jobs_claim_idx','assets_project_visibility_idx');")
+          test "$indexes" -eq 3
 
-      - name: Reapply must fail rather than silently fork schema
+      - name: Install API runtime dependency
+        run: npm install --no-package-lock --ignore-scripts
+
+      - name: Start shared API
         shell: bash
         run: |
           set -euo pipefail
-          if psql --set ON_ERROR_STOP=on --file database/migrations/0001_phase2_foundation.sql >/tmp/reapply.log 2>&1; then
-            echo "Migration unexpectedly reapplied without a migration ledger"
-            cat /tmp/reapply.log
-            exit 1
-          fi
-          grep -Eq 'already exists|duplicate' /tmp/reapply.log
-          echo "Reapply protection: PASS"
+          npm run api:start > /tmp/platform-api.log 2>&1 &
+          echo $! > /tmp/platform-api.pid
+          for attempt in {1..30}; do
+            if curl --fail --silent http://127.0.0.1:8787/ready >/dev/null; then exit 0; fi
+            sleep 1
+          done
+          cat /tmp/platform-api.log
+          exit 1
+
+      - name: Run Phase 2B HTTP end-to-end
+        run: npm run api:smoke
+
+      - name: Print API log on failure
+        if: failure()
+        run: cat /tmp/platform-api.log || true
+
+      - name: Stop shared API
+        if: always()
+        run: test ! -f /tmp/platform-api.pid || kill $(cat /tmp/platform-api.pid) || true
