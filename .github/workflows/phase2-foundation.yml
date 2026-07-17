@@ -79,11 +79,28 @@ jobs:
           exit 1
 
       - name: Run Phase 2B HTTP end-to-end
-        run: npm run api:smoke
+        shell: bash
+        run: |
+          set +e
+          npm run api:smoke > /tmp/phase2b-smoke.log 2>&1
+          code=$?
+          cat /tmp/phase2b-smoke.log
+          exit $code
 
-      - name: Print API log on failure
-        if: failure()
-        run: cat /tmp/platform-api.log || true
+      - name: Collect API diagnostics
+        if: always()
+        run: |
+          cp /tmp/platform-api.log ./platform-api.log || true
+          cp /tmp/phase2b-smoke.log ./phase2b-smoke.log || true
+
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: phase2b-api-diagnostics
+          path: |
+            platform-api.log
+            phase2b-smoke.log
+          retention-days: 3
 
       - name: Stop shared API
         if: always()
