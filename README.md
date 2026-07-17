@@ -13,8 +13,8 @@
 | **Fase 0** — Consolidación documental y auditoría | ✅ Completada y fusionada en `main` (PR #2). Ver `docs/AUDIT-2026-07-13.md`, `docs/THIRD_PARTY.md`, `docs/ADR/0001` |
 | **Fase 1** — Foundation e integración de núcleos | ✅ Completada: pipeline real de Wardrobe validado de extremo a extremo (`docs/EXECUTION-WARDROBE-CORE-2026-07-17.md`), `fashion-schema` v0.1, exportador Wardrobe→MIRRORA, y MIRRORA consumiendo el catálogo real con Outfit Studio por categorías (MIRRORA PR #1 fusionado) |
 | **Fase 2** — Persistencia y pipeline profesional | ⏳ **Pendiente** (JSON local + localStorage siguen siendo la persistencia actual; no es la solución definitiva) |
-| **Fase 3** — Ontología V1 | 🔄 **Misión actual** |
-| **Fase 4** — Outfit Layer | 🔄 **Misión actual** |
+| **Fase 3** — Ontología V1 | ✅ Consolidada (contrato canónico único, CI verde). Ver `docs/CONSOLIDATION-3-4.md` |
+| **Fase 4** — Outfit Layer | ✅ Consolidada (creación/revisión/publicación con validación fail-closed). Ver `docs/CONSOLIDATION-3-4.md` |
 | Fase 5 — Website Builder MVP | Posterior. Investigación previa registrada: inventariar y comparar los builders existentes en los repositorios del propietario antes de elegir base |
 | Fases 6-10 | Según roadmap |
 
