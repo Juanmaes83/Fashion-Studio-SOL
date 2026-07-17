@@ -1,0 +1,75 @@
+name: Phase 2 Jobs
+on:
+  push:
+    branches: ["phase-2/**"]
+  pull_request:
+    branches: ["main"]
+jobs:
+  jobs-worker-ops:
+    runs-on: ubuntu-latest
+    services:
+      postgres:
+        image: postgres:16
+        env:
+          POSTGRES_USER: fashion
+          POSTGRES_PASSWORD: fashion
+          POSTGRES_DB: fashion_studio
+        ports: ["5432:5432"]
+        options: >-
+          --health-cmd="pg_isready -U fashion -d fashion_studio"
+          --health-interval=10s --health-timeout=5s --health-retries=5
+    env:
+      PGHOST: localhost
+      PGPORT: 5432
+      PGUSER: fashion
+      PGPASSWORD: fashion
+      PGDATABASE: fashion_studio
+      DATABASE_URL: postgresql://fashion:fashion@localhost:5432/fashion_studio
+      ADMIN_API_TOKEN: phase2-test-token
+      STORAGE_SIGNING_SECRET: phase2-test-signing-secret-at-least-32-chars
+      STORAGE_ROOT: /tmp/fashion-platform-storage-jobs
+      API_BASE_URL: http://127.0.0.1:8787
+      ALLOWED_ORIGINS: http://localhost:4173
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: "22"
+      - name: Verify ordered migrations
+        run: |
+          test -f database/migrations/0001_phase2_foundation.sql
+          test -f database/migrations/0002_phase2_assets.sql
+          test -f database/migrations/0003_phase2_jobs.sql
+      - name: Apply migrations
+        run: |
+          psql --set ON_ERROR_STOP=on --file database/migrations/0001_phase2_foundation.sql
+          psql --set ON_ERROR_STOP=on --file database/migrations/0002_phase2_assets.sql
+          psql --set ON_ERROR_STOP=on --file database/migrations/0003_phase2_jobs.sql
+      - name: Verify jobs schema
+        run: |
+          test "$(psql -Atc "select count(*) from information_schema.tables where table_schema='public' and table_name in ('worker_heartbeats','job_events');")" -eq 2
+          test "$(psql -Atc "select count(*) from information_schema.columns where table_name='generation_jobs' and column_name in ('priority','lease_expires_at','cancel_requested_at','last_heartbeat_at','progress','result_summary');")" -eq 6
+      - name: Install runtime
+        run: npm install --no-package-lock --ignore-scripts
+      - name: Start API
+        run: |
+          npm run api:start > /tmp/platform-api-jobs.log 2>&1 &
+          echo $! > /tmp/platform-api-jobs.pid
+          for attempt in {1..30}; do curl --fail --silent http://127.0.0.1:8787/ready >/dev/null && exit 0; sleep 1; done
+          cat /tmp/platform-api-jobs.log; exit 1
+      - name: Seed API domain
+        run: npm run api:smoke
+      - name: Test jobs worker recovery and operations panel
+        run: npm run jobs:smoke
+      - name: Collect diagnostics
+        if: always()
+        run: cp /tmp/platform-api-jobs.log ./platform-api-jobs.log || true
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: phase2d-jobs-diagnostics
+          path: platform-api-jobs.log
+          retention-days: 3
+      - name: Stop API
+        if: always()
+        run: test ! -f /tmp/platform-api-jobs.pid || kill $(cat /tmp/platform-api-jobs.pid) || true
