@@ -1,0 +1,11 @@
+{
+  "name": "fashion-studio-sol",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "pretest": "node tools/prepare-test-data.mjs",
+    "test": "node --test",
+    "build:schemas": "node tools/build-schemas.mjs",
+    "check:schemas": "node tools/build-schemas.mjs --check"
+  }
+}

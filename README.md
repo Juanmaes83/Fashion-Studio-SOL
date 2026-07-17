@@ -6,6 +6,20 @@
 
 ---
 
+## Estado del proyecto — 2026-07-17
+
+| Fase | Estado |
+|---|---|
+| **Fase 0** — Consolidación documental y auditoría | ✅ Completada y fusionada en `main` (PR #2). Ver `docs/AUDIT-2026-07-13.md`, `docs/THIRD_PARTY.md`, `docs/ADR/0001` |
+| **Fase 1** — Foundation e integración de núcleos | ✅ Completada: pipeline real de Wardrobe validado de extremo a extremo (`docs/EXECUTION-WARDROBE-CORE-2026-07-17.md`), `fashion-schema` v0.1, exportador Wardrobe→MIRRORA, y MIRRORA consumiendo el catálogo real con Outfit Studio por categorías (MIRRORA PR #1 fusionado) |
+| **Fase 2** — Persistencia y pipeline profesional | ⏳ **Pendiente** (JSON local + localStorage siguen siendo la persistencia actual; no es la solución definitiva) |
+| **Fase 3** — Ontología V1 | ✅ Consolidada (contrato canónico único, CI verde). Ver `docs/CONSOLIDATION-3-4.md` |
+| **Fase 4** — Outfit Layer | ✅ Consolidada (creación/revisión/publicación con validación fail-closed). Ver `docs/CONSOLIDATION-3-4.md` |
+| Fase 5 — Website Builder MVP | Posterior. Investigación previa registrada: inventariar y comparar los builders existentes en los repositorios del propietario antes de elegir base |
+| Fases 6-10 | Según roadmap |
+
+---
+
 ## 1. Visión
 
 Fashion Studio SOL debe convertir fotografías, catálogos y activos de una marca en una experiencia de moda completa:
@@ -1222,23 +1236,22 @@ research/tryon-benchmark
 
 ## 20. Próxima acción recomendada
 
-Crear la primera rama de trabajo:
+Fases 0, 1, 3 y 4 están completadas y consolidadas (contrato canónico único,
+máquina de estados protegida, CI verde en los tres repos; ver
+`docs/CONSOLIDATION-3-4.md`). Los PR permanecen en draft a la espera de aprobación.
 
-```text
-foundation/asset-inventory
-```
+**Siguiente decisión real del roadmap: Fase 2 — Persistencia y pipeline profesional.**
+Es el desbloqueo pendiente antes de cualquier SaaS. Decisión a tomar:
 
-Y añadir:
+1. Elegir base de datos y storage (el roadmap propone PostgreSQL/Supabase + storage
+   con URLs firmadas) manteniendo estables los IDs y el contrato `fashion-schema`.
+2. Migrar la fuente de verdad de JSON local (`wardrobe/data`) y localStorage
+   (MIRRORA) a persistencia compartida **sin cambiar la semántica** ya consolidada.
+3. Extraer la Studio API y el pipeline de import a un servicio desplegable
+   (hoy viven en el dev server de Vite).
 
-1. `docs/THIRD_PARTY.md`.
-2. `docs/PRODUCT.md`.
-3. `docs/ARCHITECTURE.md`.
-4. `docs/ROADMAP.md`.
-5. ADR: integración Wardrobe + MIRRORA.
-6. Tabla definitiva de repositorios, upstream, licencia, uso y decisión.
-7. Criterios de aceptación del primer vertical slice.
-
-Después comenzará la integración técnica.
+En paralelo, investigación previa de Fase 5 (Website Builder): inventariar y comparar
+los builders existentes en los repositorios del propietario antes de elegir base.
 
 ---
 

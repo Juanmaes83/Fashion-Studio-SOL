@@ -1,0 +1,137 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://fashion-studio-sol.dev/schemas/outfit/1.1.0",
+  "title": "Outfit",
+  "_generated": "Generado por tools/build-schemas.mjs desde ontology.json. NO EDITAR.",
+  "description": "Outfit. Estados y vocabularios derivados de la Ontología V1 canónica.",
+  "type": "object",
+  "required": [
+    "id",
+    "name",
+    "garmentIds"
+  ],
+  "properties": {
+    "id": {
+      "type": "string",
+      "pattern": "^[a-z0-9]+(?:-[a-z0-9]+)*$"
+    },
+    "name": {
+      "type": "string",
+      "minLength": 1
+    },
+    "garmentIds": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      },
+      "minItems": 1
+    },
+    "occasion": {
+      "type": "array",
+      "items": {
+        "enum": [
+          "office",
+          "casual",
+          "smart-casual",
+          "weekend",
+          "evening",
+          "event",
+          "travel",
+          "sport"
+        ]
+      }
+    },
+    "season": {
+      "type": "array",
+      "items": {
+        "enum": [
+          "spring",
+          "summer",
+          "autumn",
+          "winter",
+          "all-season"
+        ]
+      }
+    },
+    "style": {
+      "anyOf": [
+        {
+          "enum": [
+            "minimal",
+            "smart-casual",
+            "tailored",
+            "casual",
+            "street",
+            "boho",
+            "evening",
+            "sport"
+          ]
+        },
+        {
+          "type": "null"
+        }
+      ]
+    },
+    "description": {
+      "type": "string"
+    },
+    "reason": {
+      "type": "string"
+    },
+    "setting": {
+      "type": "string"
+    },
+    "tags": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      }
+    },
+    "image": {
+      "anyOf": [
+        {
+          "type": "string"
+        },
+        {
+          "type": "null"
+        }
+      ]
+    },
+    "modeledImage": {
+      "type": "string"
+    },
+    "flatLayImage": {
+      "anyOf": [
+        {
+          "type": "string"
+        },
+        {
+          "type": "null"
+        }
+      ]
+    },
+    "status": {
+      "enum": [
+        "draft",
+        "review",
+        "approved",
+        "rejected",
+        "published"
+      ]
+    },
+    "source": {
+      "type": "string"
+    },
+    "createdAt": {
+      "type": "string"
+    },
+    "updatedAt": {
+      "type": "string"
+    },
+    "history": {
+      "type": "array"
+    }
+  },
+  "additionalProperties": true,
+  "$comment": "Conflictos de slot y existencia de garmentIds se validan contra la biblioteca en validate.mjs (no expresable en JSON Schema puro)."
+}
