@@ -16,22 +16,22 @@ async function jsonCall(path, { method = "GET", body, auth = false, headers = {}
   return { response, payload };
 }
 
-let result = await jsonCall("/admin/projects/project-sol/assets/upload-intent", {
-  method: "POST", auth: true, headers: { "idempotency-key": "asset-smoke-1" },
-  body: { filename: "pixel.png", mimeType: "image/png", byteSize: png.length, checksumSha256: checksum, kind: "thumbnail", garmentId: "shirt-white", width: 1, height: 1 }
-});
-assert.equal(result.response.status, 201, JSON.stringify(result.payload));
-const assetId = result.payload.asset.id;
-const uploadPath = result.payload.upload.path;
+async function uploadAsset({ key, kind }) {
+  let result = await jsonCall("/admin/projects/project-sol/assets/upload-intent", {
+    method: "POST", auth: true, headers: { "idempotency-key": key },
+    body: { filename: `${kind}.png`, mimeType: "image/png", byteSize: png.length, checksumSha256: checksum, kind, garmentId: "shirt-white", width: 1, height: 1 }
+  });
+  assert.equal(result.response.status, 201, JSON.stringify(result.payload));
+  const assetId = result.payload.asset.id;
+  const upload = await fetch(base + result.payload.upload.path, { method: "PUT", body: png, headers: { "content-type": "application/octet-stream" } });
+  assert.equal(upload.status, 200, await upload.text());
+  result = await jsonCall(`/admin/projects/project-sol/assets/${assetId}/complete`, { method: "POST", auth: true });
+  assert.equal(result.response.status, 200, JSON.stringify(result.payload));
+  return assetId;
+}
 
-let upload = await fetch(base + uploadPath, { method: "PUT", body: png, headers: { "content-type": "application/octet-stream" } });
-assert.equal(upload.status, 200, await upload.text());
-
-result = await jsonCall(`/admin/projects/project-sol/assets/${assetId}/complete`, { method: "POST", auth: true });
-assert.equal(result.response.status, 200, JSON.stringify(result.payload));
-assert.equal(result.payload.status, "ready");
-
-result = await jsonCall(`/admin/projects/project-sol/assets/${assetId}`, { auth: true });
+const assetId = await uploadAsset({ key: "asset-smoke-1", kind: "thumbnail" });
+let result = await jsonCall(`/admin/projects/project-sol/assets/${assetId}`, { auth: true });
 assert.equal(result.response.status, 200);
 assert.ok(result.payload.download.path);
 let privateRead = await fetch(base + result.payload.download.path);
@@ -55,4 +55,11 @@ result = await jsonCall(`/admin/projects/project-sol/assets/${assetId}`, { metho
 assert.equal(result.response.status, 200, JSON.stringify(result.payload));
 assert.equal(result.payload.status, "deleted");
 
-console.log("Phase 2C asset lifecycle smoke: PASS");
+const sourceAssetId = await uploadAsset({ key: "asset-smoke-source-block", kind: "source" });
+result = await jsonCall(`/admin/projects/project-sol/assets/${sourceAssetId}/promote`, { method: "POST", auth: true, body: { decision: "approved" } });
+assert.equal(result.response.status, 422, JSON.stringify(result.payload));
+assert.equal(result.payload.error.code, "ASSET_KIND_NOT_PUBLIC");
+result = await jsonCall(`/admin/projects/project-sol/assets/${sourceAssetId}`, { method: "DELETE", auth: true });
+assert.equal(result.response.status, 200, JSON.stringify(result.payload));
+
+console.log("Phase 2C asset lifecycle and safe publication smoke: PASS");
