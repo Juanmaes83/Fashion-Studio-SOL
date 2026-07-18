@@ -1,6 +1,8 @@
 import * as repo from './repository.mjs';
+import { PUBLIC_ASSET_KINDS } from './assets.mjs';
 
 function assetView(row, storage) {
+  const publishEligible = PUBLIC_ASSET_KINDS.has(row.kind);
   const item = {
     id: row.id,
     garmentId: row.garment_id,
@@ -8,6 +10,7 @@ function assetView(row, storage) {
     kind: row.kind,
     visibility: row.visibility,
     status: row.status,
+    publishEligible,
     mimeType: row.mime_type,
     byteSize: Number(row.byte_size),
     checksumSha256: row.checksum_sha256,
@@ -57,6 +60,9 @@ export async function getStudioSnapshot(pool, storage, projectId) {
     }
   }
 
+  const eligibleAssets = assets.filter(asset => asset.status === 'ready' && asset.publishEligible);
+  const blockedAssets = assets.filter(asset => asset.status === 'ready' && !asset.publishEligible);
+
   return {
     contract: 'phase-2f/studio-snapshot/v1',
     project,
@@ -65,6 +71,12 @@ export async function getStudioSnapshot(pool, storage, projectId) {
       outfits: outfits.length,
       assets: assets.length,
       jobs: jobsResult.rows.length
+    },
+    publicationPlan: {
+      eligible: eligibleAssets.length,
+      blocked: blockedAssets.length,
+      eligibleKinds: [...PUBLIC_ASSET_KINDS],
+      blockedKinds: [...new Set(blockedAssets.map(asset => asset.kind))]
     },
     garments: garments.map(garment => ({ ...garment, assets: assetsByGarment.get(garment.id) || [] })),
     outfits: outfits.map(outfit => ({ ...outfit, assets: assetsByOutfit.get(outfit.id) || [] })),
