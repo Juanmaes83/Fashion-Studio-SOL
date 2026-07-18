@@ -104,7 +104,8 @@ export async function createPublication(pool, projectId, publishedBy="admin") {
       if (!validation.ok) throw new ApiError(422,"PUBLICATION_INVALID","Publication contains invalid outfits",validation.errors);
     }
     const assetRows = (await client.query(`SELECT id,garment_id,outfit_id,kind,mime_type,width,height,checksum_sha256
-      FROM assets WHERE project_id=$1 AND status='ready' AND visibility='public' ORDER BY created_at,id`, [projectId])).rows;
+      FROM assets WHERE project_id=$1 AND status='ready' AND visibility='public'
+      AND kind = ANY($2::text[]) ORDER BY created_at,id`, [projectId,["modeled","editorial","flatlay","thumbnail"]])).rows;
     const assets = assetRows.map(row => ({
       id: row.id,
       garmentId: row.garment_id,
