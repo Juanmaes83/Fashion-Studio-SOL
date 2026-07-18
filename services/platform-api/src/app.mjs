@@ -8,6 +8,9 @@ import * as jobs from "./jobs.mjs";
 import { opsHtml } from "./ops.mjs";
 import { studioHtml } from "./studio.mjs";
 import { getStudioSnapshot } from "./studio-repository.mjs";
+const safeStudioHtml=studioHtml
+ .replace("for(const o of snapshot.outfits){if(!['approved','published'].includes(o.status))await api('/admin/projects/'+project()+'/outfits/'+encodeURIComponent(o.id)+'/transitions',{method:'POST',body:JSON.stringify({action:'approve'})})}","")
+ .replace("Aprobando outfits y publicando únicamente ","Publicando únicamente ");
 const json=(res,status,body,id)=>{res.writeHead(status,{"content-type":"application/json; charset=utf-8","x-request-id":id});res.end(status===204?undefined:JSON.stringify(body))};
 const html=(res,body,id)=>{res.writeHead(200,{"content-type":"text/html; charset=utf-8","cache-control":"no-store","x-content-type-options":"nosniff","content-security-policy":"default-src 'self'; img-src 'self' data: blob:; script-src 'unsafe-inline'; style-src 'unsafe-inline'; connect-src 'self'; frame-ancestors 'none'","x-request-id":id});res.end(body)};
 const binary=(res,row,body,id)=>{res.writeHead(200,{"content-type":row.mime_type,"content-length":body.length,"cache-control":row.visibility==="public"?"public, max-age=31536000, immutable":"private, no-store","x-content-type-options":"nosniff","x-request-id":id});res.end(body)};
@@ -18,7 +21,7 @@ export function createApp({pool,storage,adminToken,localDemoNoAuth=false,version
  if(req.method==="GET"&&path==="/ready"){await pool.query("SELECT 1");return json(res,200,{status:"ready",database:"ok",storage:"ok",localDemoNoAuth},id)}
  if(req.method==="GET"&&path==="/version")return json(res,200,{service:"platform-api",version,contract:"phase-2f/v1",localDemoNoAuth},id);
  if(req.method==="GET"&&path==="/ops")return html(res,opsHtml,id);
- if(req.method==="GET"&&path==="/studio")return html(res,studioHtml,id);
+ if(req.method==="GET"&&path==="/studio")return html(res,safeStudioHtml,id);
  if((p=match(path,"/uploads/:assetId"))&&req.method==="PUT"){storage.verifySignedPath({method:"PUT",assetId:p.assetId,expires:url.searchParams.get("expires"),signature:url.searchParams.get("signature")});const row=await assets.getUploadTarget(pool,p.assetId);await storage.putAtomic({key:row.storage_key,body:req,expectedSize:Number(row.byte_size),expectedChecksum:row.checksum_sha256,mimeType:row.mime_type});return json(res,200,{uploaded:true,assetId:row.id},id)}
  if((p=match(path,"/assets/:assetId"))&&req.method==="GET"){storage.verifySignedPath({method:"GET",assetId:p.assetId,expires:url.searchParams.get("expires"),signature:url.searchParams.get("signature")});const row=await assets.getReadableAsset(pool,p.assetId);return binary(res,row,await storage.read(row.storage_key),id)}
  if((p=match(path,"/public/assets/:assetId"))&&req.method==="GET"){const row=await assets.getReadableAsset(pool,p.assetId,true);return binary(res,row,await storage.read(row.storage_key),id)}
