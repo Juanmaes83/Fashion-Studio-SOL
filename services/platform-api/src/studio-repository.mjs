@@ -36,7 +36,7 @@ export async function getStudioSnapshot(pool, storage, projectId) {
     pool.query(`SELECT * FROM assets WHERE project_id=$1 AND status<>'deleted'
       ORDER BY created_at,id`, [projectId]),
     pool.query(`SELECT id,job_type,target_type,target_id,status,progress,attempt_count,max_attempts,
-      provider,model,error_code,error_message,created_at,updated_at,finished_at
+      provider,model,error_code,error_message,input,output,result_summary,created_at,updated_at,finished_at
       FROM generation_jobs WHERE project_id=$1 ORDER BY created_at DESC LIMIT 50`, [projectId]),
     pool.query(`SELECT id,version,status,checksum_sha256,published_at,withdrawn_at
       FROM publications WHERE project_id=$1 ORDER BY version DESC LIMIT 10`, [projectId])
@@ -93,6 +93,9 @@ export async function getStudioSnapshot(pool, storage, projectId) {
       model: row.model,
       errorCode: row.error_code,
       errorMessage: row.error_message,
+      input: row.input || {},
+      output: row.output || {},
+      resultSummary: row.result_summary || {},
       createdAt: row.created_at,
       updatedAt: row.updated_at,
       finishedAt: row.finished_at
