@@ -15,6 +15,7 @@ Tabla definitiva de la Fase 0. Ningún activo entra en producción sin fila aqu�
 
 | Repo | Licencia declarada | Decisión provisional |
 |---|---|---|
+| `ai-closet` | MIT (upstream `zebangeth/ai-closet`) | Adaptar como `packages/ai-closet-engine`: contratos, mapeo, jobs y gateway. No copiar la app Expo completa ni exponer claves cliente |
 | `aiclothswap-showcase` | por auditar | Solo prompts/QA/rúbrica → futuro `packages/prompt-qa`. No es el motor privado |
 | `fashionAI` | MIT (código) | Extraer patrones puntuales (upload, before/after). No usar como base: prototipo derivado de RoomGPT |
 | `gestalt` (Pinterest) | Apache 2.0 | Solo componentes selectivos; lenguaje visual propio |

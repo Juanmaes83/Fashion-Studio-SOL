@@ -330,6 +330,45 @@ MIRRORA se dividirá en:
 
 ### 5.2 Repositorios auxiliares utilizables
 
+#### `Juanmaes83/ai-closet`
+
+**Upstream original:** `zebangeth/ai-closet`  
+**Licencia:** MIT.
+
+**Rol:** AI Closet Engine y referencia de UX para armario, canvas de looks y try-on.
+
+Aporta:
+
+- App Expo / React Native de armario digital.
+- Categorizacion visual de prendas.
+- Eliminacion de fondo mediante proveedor externo.
+- Canvas de outfits con gestos de mover, escalar, rotar y ordenar capas.
+- Virtual try-on mediante proveedor externo.
+- Estados locales de procesamiento.
+
+**Decision de integracion:**
+
+No se integra como app completa dentro de Fashion Studio SOL. Se adapta como
+`packages/ai-closet-engine`, un modulo portable con contratos, mapeo a
+`fashion-schema`, jobs y cliente de gateway.
+
+**Regla de seguridad:**
+
+Los servicios AI no pueden ejecutarse desde frontend ni usar claves `EXPO_PUBLIC_*`.
+Categorizacion, fondo transparente y try-on deben pasar por backend/proxy
+(`mirrora-tryon-gateway` o API equivalente) con secretos server-side, consentimiento,
+TTL, purge y auditoria.
+
+**Como se integra:**
+
+```text
+ai-closet reference
+→ packages/ai-closet-engine
+→ fashion-schema/Garment + Outfit
+→ SOL Studio / Operations
+→ MIRRORA closet, canvas y try-on gateway
+```
+
 #### `Juanmaes83/aiclothswap-showcase`
 
 **Rol:** Prompt QA, benchmark y reparación de resultados.
