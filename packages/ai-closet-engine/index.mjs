@@ -5,6 +5,8 @@ const BLOCKED_PROVIDER_HOSTS = [
   "api.klingai.com",
 ];
 
+const OUTFIT_STATUSES = ["draft", "review", "approved", "rejected", "published"];
+
 const CATEGORY_TO_PART = {
   tops: "upperbody",
   knitwear: "upperbody",
@@ -141,6 +143,57 @@ export function mapAiClosetItemToGarment(item, options = {}) {
   });
 }
 
+export function createClosetLook(input) {
+  assertObject(input, "input");
+  const garmentIds = normalizeStringList(input.garmentIds);
+  if (!garmentIds.length) {
+    throw new Error("garmentIds must contain at least one garment id");
+  }
+  if (new Set(garmentIds).size !== garmentIds.length) {
+    throw new Error("garmentIds must not contain duplicates");
+  }
+  const status = input.status || "draft";
+  if (!OUTFIT_STATUSES.includes(status)) {
+    throw new Error(`status must be one of: ${OUTFIT_STATUSES.join(", ")}`);
+  }
+
+  const now = input.createdAt || new Date().toISOString();
+  return {
+    id: requiredString(input.id, "id"),
+    name: requiredString(input.name, "name"),
+    garmentIds,
+    status,
+    occasion: normalizeStringList(input.occasion),
+    season: normalizeStringList(input.season),
+    style: input.style || null,
+    description: input.description || "",
+    canvas: normalizeCanvas(input.canvas, garmentIds),
+    source: "ai-closet",
+    schemaVersion: input.schemaVersion || "1.1.0",
+    createdAt: now,
+    updatedAt: input.updatedAt || now,
+  };
+}
+
+export function mapClosetLookToOutfit(look) {
+  assertObject(look, "look");
+  const normalized = createClosetLook(look);
+  return {
+    id: normalized.id,
+    name: normalized.name,
+    garmentIds: normalized.garmentIds,
+    status: normalized.status,
+    occasion: normalized.occasion,
+    season: normalized.season,
+    style: normalized.style,
+    description: normalized.description,
+    source: normalized.source,
+    createdAt: normalized.createdAt,
+    updatedAt: normalized.updatedAt,
+    canvas: normalized.canvas,
+  };
+}
+
 export function createAiClosetJob(type, payload = {}) {
   const allowed = ["categorize", "remove-background", "try-on", "purge"];
   if (!allowed.includes(type)) {
@@ -229,6 +282,39 @@ function normalizeStringList(values) {
   return source.map((value) => String(value).trim()).filter(Boolean);
 }
 
+function normalizeCanvas(canvas, garmentIds) {
+  if (!canvas) return null;
+  assertObject(canvas, "canvas");
+  const items = Array.isArray(canvas.items) ? canvas.items : [];
+  const knownIds = new Set(garmentIds);
+  const normalizedItems = items.map((item, index) => {
+    assertObject(item, `canvas.items[${index}]`);
+    const garmentId = requiredString(item.garmentId, `canvas.items[${index}].garmentId`);
+    if (!knownIds.has(garmentId)) {
+      throw new Error(`canvas.items[${index}].garmentId must exist in garmentIds`);
+    }
+    return {
+      garmentId,
+      x: normalizedCanvasNumber(item.x, `canvas.items[${index}].x`, 0.5, 0, 1),
+      y: normalizedCanvasNumber(item.y, `canvas.items[${index}].y`, 0.5, 0, 1),
+      scale: normalizedCanvasNumber(item.scale, `canvas.items[${index}].scale`, 1, 0.1, 5),
+      rotation: normalizedCanvasNumber(item.rotation, `canvas.items[${index}].rotation`, 0, -360, 360),
+      zIndex: Number.isInteger(item.zIndex) ? item.zIndex : index,
+    };
+  });
+  return {
+    coordinateSystem: "normalized/v1",
+    items: normalizedItems,
+  };
+}
+
+function normalizedCanvasNumber(value, name, fallback, min, max) {
+  if (value === undefined || value === null) return fallback;
+  if (!Number.isFinite(value)) throw new Error(`${name} must be a finite number`);
+  if (value < min || value > max) throw new Error(`${name} must be between ${min} and ${max}`);
+  return value;
+}
+
 function pruneNullish(object) {
   return Object.fromEntries(Object.entries(object).filter(([, value]) => value !== undefined));
 }
@@ -245,4 +331,3 @@ function requiredString(value, name) {
   }
   return value.trim();
 }
-

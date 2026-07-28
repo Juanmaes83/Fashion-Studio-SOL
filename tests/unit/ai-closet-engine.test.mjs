@@ -4,7 +4,9 @@ import { test } from "node:test";
 import {
   createAiClosetJob,
   createClosetItemFromUpload,
+  createClosetLook,
   createGatewayClient,
+  mapClosetLookToOutfit,
   mapAiClosetItemToGarment,
   normalizeGatewayBaseUrl,
 } from "../../packages/ai-closet-engine/index.mjs";
@@ -23,6 +25,30 @@ test("creates a portable closet item from an uploaded image", () => {
   assert.equal(item.processingStatus.backgroundRemoval, "pending");
   assert.equal(item.processingStatus.categorization, "pending");
   assert.equal(item.processingStatus.tryOn, "not_requested");
+});
+
+test("models an editable closet look and maps it to the canonical outfit contract", () => {
+  const look = createClosetLook({
+    id: "look-1",
+    name: "Office navy",
+    garmentIds: ["closet-1", "closet-2"],
+    canvas: {
+      items: [
+        { garmentId: "closet-1", x: 0.4, y: 0.2, scale: 1.1, rotation: 0, zIndex: 1 },
+        { garmentId: "closet-2", x: 0.5, y: 0.72, scale: 1, rotation: 0, zIndex: 2 },
+      ],
+    },
+  });
+  const outfit = mapClosetLookToOutfit(look);
+
+  assert.equal(look.canvas.coordinateSystem, "normalized/v1");
+  assert.equal(outfit.status, "draft");
+  assert.deepEqual(outfit.garmentIds, ["closet-1", "closet-2"]);
+  assert.equal(outfit.canvas.items[1].zIndex, 2);
+  assert.throws(() => createClosetLook({ id: "bad", name: "Bad", garmentIds: ["a", "a"] }), /duplicates/);
+  assert.throws(() => createClosetLook({ id: "bad", name: "Bad", garmentIds: ["a"], status: "processing" }), /status/);
+  assert.throws(() => createClosetLook({ id: "bad", name: "Bad", garmentIds: ["a"], canvas: { items: [{ garmentId: "b" }] } }), /must exist/);
+  assert.throws(() => createClosetLook({ id: "bad", name: "Bad", garmentIds: ["a"], canvas: { items: [{ garmentId: "a", x: 1.1 }] } }), /between 0 and 1/);
 });
 
 test("maps ai-closet clothing data into the canonical garment contract", () => {
@@ -108,3 +134,13 @@ test("new ai closet module docs do not reintroduce client-side AI secrets", () =
   assert.doesNotMatch(source, /expo-jwt/);
 });
 
+test("gateway contract v0.1 declares the complete versioned backend boundary", () => {
+  const contract = JSON.parse(readFileSync(new URL("../../packages/ai-closet-engine/gateway-contract.v0.1.json", import.meta.url), "utf8"));
+
+  assert.equal(contract.version, "ai-closet-gateway/v0.1");
+  assert.equal(contract.basePath, "/api/ai-closet");
+  assert.equal(contract.operations.submitTryOn.path, "/try-on");
+  assert.equal(contract.$defs["try-on-request"].properties.schema.const, "mirrora-tryon-request/v0.1");
+  assert.deepEqual(contract.$defs.job.properties.status.enum, ["queued", "processing", "completed", "failed", "purged"]);
+  assert.equal(contract.transport.idempotencyHeader, "Idempotency-Key");
+});

@@ -28,6 +28,7 @@ como modulo portable con:
 - contratos de datos,
 - mapeo hacia `fashion-schema`,
 - definicion de jobs,
+- modelo editable de look y mapeo hacia `Outfit`,
 - cliente de gateway backend,
 - tests de seguridad basicos.
 
@@ -46,8 +47,7 @@ La UI se adaptara por superficies:
 
 ## Siguientes pasos
 
-1. Implementar endpoints reales del gateway.
+1. Implementar endpoints reales del gateway contra `gateway-contract.v0.1.json`.
 2. Portar el canvas de outfits a web con Pointer Events o libreria canvas aprobada.
 3. Conectar export SOL -> MIRRORA con prendas y looks reales.
 4. Anadir consentimiento, TTL, purge y auditoria antes de try-on publico.
-

@@ -19,7 +19,16 @@ Este paquete define la capa comun:
 - Modelo `ClosetItem` compatible con el concepto de prenda de ai-closet.
 - Mapeo hacia `fashion-schema/Garment`.
 - Contrato de jobs para categorizacion, limpieza de fondo y try-on.
+- Modelo `ClosetLook` editable y mapeo hacia `fashion-schema/Outfit`.
 - Cliente de gateway que apunta a backend propio, nunca a proveedores IA desde navegador.
+
+## Fuente de verdad de contratos
+
+- `ai-closet-module.schema.json` define `ClosetItem` y `ClosetLook`.
+- `gateway-contract.v0.1.json` es el contrato versionado de transporte. MIRRORA y el
+  futuro gateway deben respetarlo; ningun proveedor forma parte de este contrato.
+- `ClosetLook.canvas` usa coordenadas normalizadas (`normalized/v1`) para que la futura
+  interfaz se comporte igual en movil y escritorio.
 
 La UI concreta vive fuera:
 
@@ -47,4 +56,3 @@ En esta adaptacion esas claves quedan prohibidas en frontend. El modulo solo ace
 4. Mapear a `fashion-schema/Garment`.
 5. Exportar a MIRRORA como catalogo/closet consumible.
 6. En fase posterior, enviar try-on con consentimiento explicito.
-
