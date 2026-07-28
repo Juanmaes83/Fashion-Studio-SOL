@@ -1,0 +1,74 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://fashion-studio-sol.dev/contracts/ai-closet-gateway/v0.1",
+  "title": "AI Closet Gateway Contract v0.1",
+  "description": "Contrato de transporte entre clientes de Fashion Studio SOL o MIRRORA y el backend AI Closet. No representa proveedores de IA.",
+  "version": "ai-closet-gateway/v0.1",
+  "basePath": "/api/ai-closet",
+  "transport": {
+    "contentType": "application/json",
+    "authentication": "session-or-bearer-token",
+    "idempotencyHeader": "Idempotency-Key"
+  },
+  "operations": {
+    "loadCloset": { "method": "GET", "path": "/closet?campaign={campaignId}", "response": "closet-response" },
+    "categorize": { "method": "POST", "path": "/categorize", "request": "asset-request", "response": "job-response" },
+    "removeBackground": { "method": "POST", "path": "/remove-background", "request": "asset-request", "response": "job-response" },
+    "submitTryOn": { "method": "POST", "path": "/try-on", "request": "try-on-request", "response": "job-response" },
+    "getTryOnStatus": { "method": "GET", "path": "/try-on/{jobId}", "response": "job-response" },
+    "getTryOnResult": { "method": "GET", "path": "/try-on/{jobId}/result", "response": "try-on-result-response" },
+    "purgeTryOn": { "method": "DELETE", "path": "/try-on/{jobId}", "response": "purge-response" }
+  },
+  "$defs": {
+    "asset-request": {
+      "type": "object",
+      "required": ["schema", "assetId"],
+      "properties": {
+        "schema": { "const": "ai-closet-asset-request/v0.1" },
+        "assetId": { "type": "string", "minLength": 1 }
+      },
+      "additionalProperties": false
+    },
+    "try-on-request": {
+      "type": "object",
+      "required": ["schema", "lookId", "itemIds", "consentId", "personAssetId"],
+      "properties": {
+        "schema": { "const": "mirrora-tryon-request/v0.1" },
+        "brandId": { "type": ["string", "null"] },
+        "campaignId": { "type": ["string", "null"] },
+        "lookId": { "type": "string", "minLength": 1 },
+        "itemIds": { "type": "array", "minItems": 1, "items": { "type": "string", "minLength": 1 }, "uniqueItems": true },
+        "consentId": { "type": "string", "minLength": 1 },
+        "personAssetId": { "type": "string", "minLength": 1 }
+      },
+      "additionalProperties": false
+    },
+    "job-response": {
+      "type": "object",
+      "required": ["schema", "requestId", "job"],
+      "properties": {
+        "schema": { "const": "ai-closet-job-response/v0.1" },
+        "requestId": { "type": "string", "minLength": 1 },
+        "job": { "$ref": "#/$defs/job" }
+      },
+      "additionalProperties": false
+    },
+    "job": {
+      "type": "object",
+      "required": ["id", "type", "status", "createdAt"],
+      "properties": {
+        "id": { "type": "string", "minLength": 1 },
+        "type": { "enum": ["categorize", "remove-background", "try-on", "purge"] },
+        "status": { "enum": ["queued", "processing", "completed", "failed", "purged"] },
+        "createdAt": { "type": "string", "format": "date-time" },
+        "updatedAt": { "type": "string", "format": "date-time" },
+        "expiresAt": { "type": ["string", "null"], "format": "date-time" },
+        "error": { "type": ["object", "null"] }
+      },
+      "additionalProperties": false
+    },
+    "closet-response": { "type": "object", "required": ["schema", "items"], "properties": { "schema": { "const": "ai-closet-closet-response/v0.1" }, "items": { "type": "array" } }, "additionalProperties": false },
+    "try-on-result-response": { "type": "object", "required": ["schema", "jobId", "status"], "properties": { "schema": { "const": "ai-closet-try-on-result/v0.1" }, "jobId": { "type": "string" }, "status": { "enum": ["processing", "completed", "failed", "purged"] }, "resultAssetId": { "type": ["string", "null"] }, "expiresAt": { "type": ["string", "null"], "format": "date-time" } }, "additionalProperties": false },
+    "purge-response": { "type": "object", "required": ["schema", "jobId", "status"], "properties": { "schema": { "const": "ai-closet-purge-response/v0.1" }, "jobId": { "type": "string" }, "status": { "const": "purged" } }, "additionalProperties": false }
+  }
+}
