@@ -1,0 +1,182 @@
+{
+  "schemaVersion": "1.0.0",
+  "libraryId": "female-ecom-editorial-v1",
+  "title": "Female E-commerce and Editorial Pose Library",
+  "status": "canonical-source-transcription",
+  "source": {
+    "type": "user-supplied-screenshots",
+    "capturedAt": "2026-07-29",
+    "transcriptionPolicy": "Wording, capitalization, hyphenation and punctuation are preserved from the source. Only visual line wrapping and bold styling are normalized."
+  },
+  "reference": {
+    "id": "FREF-01",
+    "name": "Female Reference",
+    "prompt": "Full body e-commerce catalogue photograph of a female fashion model, standing facing the camera. Young adult Caucasian woman in her mid twenties with fair skin, long blonde hair falling just past the shoulders in a soft straight style with a center part, blue-grey eyes, clean natural beauty makeup with light foundation, subtle brow and soft neutral lip. She wears a fitted plain white crew-neck t-shirt tucked into mid-blue straight-leg jeans and plain white leather sneakers. Standing in a relaxed neutral pose, arms resting naturally at her sides, weight even, looking directly into the lens with a calm confident expression. Evenly lit professional studio, seamless neutral white background, soft diffused lighting. Sharp focus, high resolution, natural realistic skin, entire body and shoes fully in frame, gentle shadow at the feet, product photography."
+  },
+  "poses": {
+    "ecommerce": [
+      {
+        "id": "S01",
+        "name": "Neutral Stand",
+        "what": "Full body e-commerce catalogue photograph of a female fashion model as seen in the reference image",
+        "pose": "Standing facing the camera in a relaxed neutral pose, arms resting naturally at her sides, weight even, looking directly into the lens with a calm confident expression.",
+        "location": "Evenly lit professional studio, seamless neutral white background, soft diffused lighting.",
+        "additional": "Sharp focus, high resolution, natural realistic skin, entire body and shoes fully in frame, product photography."
+      },
+      {
+        "id": "S02",
+        "name": "Hand on Hip",
+        "what": "Full body e-commerce catalogue photograph of a female fashion model as seen in the reference image",
+        "pose": "Standing facing the camera with one hand resting on her hip, elbow out, the other arm hanging naturally, weight shifted onto one leg with a subtle hip tilt, direct eye contact with an easy confident expression.",
+        "location": "Evenly lit professional studio, seamless neutral white background, soft diffused lighting.",
+        "additional": "Sharp focus, high resolution, natural realistic skin, entire body and shoes fully in frame, product photography."
+      },
+      {
+        "id": "S03",
+        "name": "Both Hands in Pockets",
+        "what": "Full body e-commerce catalogue photograph of a female fashion model as seen in the reference image",
+        "pose": "Standing facing the camera with both hands relaxed in her front pockets, thumbs out, shoulders loose, a subtle smile, looking into the lens.",
+        "location": "Evenly lit professional studio, seamless neutral white background, soft diffused lighting.",
+        "additional": "Sharp focus, high resolution, natural realistic skin, entire body and shoes fully in frame, product photography."
+      },
+      {
+        "id": "S04",
+        "name": "Side Profile",
+        "what": "Full body e-commerce catalogue photograph of a female fashion model as seen in the reference image",
+        "pose": "Standing in a full side profile facing left, body at 90 degrees to the camera, arms relaxed at her sides, chin level, gaze forward past the lens, clean side silhouette.",
+        "location": "Evenly lit professional studio, seamless neutral white background, soft diffused lighting.",
+        "additional": "Sharp focus, high resolution, natural realistic skin, entire body and shoes fully in frame, product photography."
+      },
+      {
+        "id": "S05",
+        "name": "Back View",
+        "what": "Full body e-commerce catalogue photograph of a female fashion model as seen in the reference image",
+        "pose": "Standing with her back fully to the camera, arms relaxed at her sides, hair swept over one shoulder to the front so the entire back of the outfit is clearly visible, head facing forward.",
+        "location": "Evenly lit professional studio, seamless neutral white background, soft diffused lighting.",
+        "additional": "Sharp focus, high resolution, natural realistic skin, entire body and shoes fully in frame, product photography."
+      },
+      {
+        "id": "S06",
+        "name": "Three-Quarter Turn",
+        "what": "Full body e-commerce catalogue photograph of a female fashion model as seen in the reference image",
+        "pose": "Body angled 45 degrees to the camera in a three-quarter turn, weight on her back leg, one hand loosely in her pocket, head turned toward the lens with a relaxed expression.",
+        "location": "Evenly lit professional studio, seamless neutral white background, soft diffused lighting.",
+        "additional": "Sharp focus, high resolution, natural realistic skin, entire body and shoes fully in frame, product photography."
+      },
+      {
+        "id": "S07",
+        "name": "Mid-Walk",
+        "what": "Full body e-commerce catalogue photograph of a female fashion model as seen in the reference image",
+        "pose": "Captured mid-stride walking toward the camera, one foot forward, natural arm swing, the outfit and hair in slight motion, a relaxed everyday expression, subtle motion energy.",
+        "location": "Evenly lit professional studio, seamless neutral white background, soft diffused lighting.",
+        "additional": "Sharp focus, high resolution, natural realistic skin, entire body and feet fully in frame, product photography."
+      },
+      {
+        "id": "S08",
+        "name": "Looking Away",
+        "what": "Full body e-commerce catalogue photograph of a female fashion model as seen in the reference image",
+        "pose": "Standing at a slight three-quarter angle with her gaze directed off-camera to the side, a relaxed candid expression, one hand loosely at her collar or neckline, natural editorial mood.",
+        "location": "Evenly lit professional studio, seamless neutral white background, soft diffused lighting.",
+        "additional": "Sharp focus, high resolution, natural realistic skin, entire body and shoes fully in frame, product photography."
+      },
+      {
+        "id": "S09",
+        "name": "Half-Body Candid",
+        "what": "Waist-up e-commerce catalogue photograph of a female fashion model as seen in the reference image",
+        "pose": "Standing facing the camera with her hands loosely clasped in front of her, genuinely laughing with natural candid energy, head tipping slightly.",
+        "location": "Evenly lit professional studio, seamless neutral white background, soft diffused lighting.",
+        "additional": "Sharp focus, high resolution, natural realistic skin, waist-up crop, product photography."
+      },
+      {
+        "id": "S10",
+        "name": "Hand on Hip 3/4 Crop",
+        "what": "Three-quarter length e-commerce catalogue photograph (framed from mid-thigh up) of a female fashion model as seen in the reference image",
+        "pose": "One hand resting on her hip with the elbow out, the other arm relaxed, a subtle weight shift, direct eye contact with a calm confident expression.",
+        "location": "Evenly lit professional studio, seamless neutral white background, soft diffused lighting.",
+        "additional": "Sharp focus, high resolution, natural realistic skin, product photography."
+      }
+    ],
+    "editorial": [
+      {
+        "id": "ED1",
+        "name": "Top-Down Look Up",
+        "what": "High-angle editorial catalogue photograph of a female fashion model as seen in the reference image, shot from directly above and in front of her, wearing her fitted white t-shirt and blue jeans",
+        "pose": "Bent forward at the waist with one forearm resting across her thigh, the other hand raised with fingertips resting lightly against her chin, face tilted up toward the overhead camera with a playful knowing gaze, the body foreshortened by the top-down perspective.",
+        "location": "Evenly lit professional studio, seamless neutral white background, soft diffused lighting.",
+        "additional": "Sharp focus on the face, high resolution, natural realistic skin, dramatic top-down perspective with natural foreshortening, elevated editorial fashion photography."
+      },
+      {
+        "id": "ED2",
+        "name": "Low-Angle Recline, Hand to Lens",
+        "what": "Full body editorial catalogue photograph of a female fashion model as seen in the reference image, shot from a very low worm's-eye angle, wearing her fitted white t-shirt and blue jeans",
+        "pose": "Seated on the floor leaning back onto one straight arm, one knee bent up with the other hand draped over it and reaching toward the camera so the hand sits soft in the extreme foreground, torso angled toward the lens, head tilted with a cool downward gaze into the camera.",
+        "location": "Professional studio, seamless neutral white background, soft diffused lighting with a gentle directional key.",
+        "additional": "Sharp focus on the face with the foreground hand as a natural blur layer, high resolution, natural realistic skin, dramatic low-angle perspective, elevated editorial fashion photography, shallow depth of field."
+      },
+      {
+        "id": "ED3",
+        "name": "Wrists Crossed Overhead",
+        "what": "Close-up editorial catalogue photograph (framed from the waist up) of a female fashion model as seen in the reference image, shot from a slightly low angle, wearing her fitted white t-shirt and blue jeans",
+        "pose": "Both arms raised with the wrists softly crossed above her head, hands relaxed with fingers gently curved, chin level, one side of the face falling into soft shadow from the raised arms, a calm direct gaze into the lens beneath the crossed arms.",
+        "location": "Professional studio, seamless neutral white background, strong directional key light creating a clean split of light and soft shadow across the face.",
+        "additional": "Sharp focus, high resolution, natural realistic skin, sculptural arm lines, elevated editorial fashion photography."
+      },
+      {
+        "id": "ED4",
+        "name": "Arms Framing the Face",
+        "what": "Close-up editorial catalogue photograph (framed from the chest up) of a female fashion model as seen in the reference image, wearing her fitted white t-shirt and blue jeans",
+        "pose": "One arm arched over the top of her head with the hand curving down beside her temple, the other hand raised open beside her cheek with the fingers softly spread, elbows framing the face, chin tucked slightly with an intense focused gaze into the lens, hair sleek and pulled back with a few loose strands, dancer-like tension through the arms.",
+        "location": "Professional studio, seamless deep grey gradient background, soft diffused lighting with a controlled directional key.",
+        "additional": "Sharp focus, high resolution, natural realistic skin with a subtle healthy sheen, elevated editorial fashion photography, athletic movement energy."
+      },
+      {
+        "id": "ED5",
+        "name": "Wall Sit, Knee Up",
+        "what": "Full body editorial catalogue photograph of a female fashion model as seen in the reference image, seated on the studio floor",
+        "pose": "Seated on the floor leaning back against the seamless wall, one knee drawn up with her forearm draped over it, the other leg relaxed, shoulders easy against the wall, looking directly into the lens with a calm grounded expression.",
+        "location": "Evenly lit professional studio, seamless neutral white background, soft diffused lighting.",
+        "additional": "Sharp focus, high resolution, natural realistic skin, entire figure in frame, elevated editorial fashion photography."
+      },
+      {
+        "id": "ED6",
+        "name": "Knee Hug Floor Sit",
+        "what": "Full body editorial catalogue photograph of a female fashion model as seen in the reference image, seated on the studio floor",
+        "pose": "Seated on the floor with one knee drawn up toward her chest and the other leg folded flat, both hands clasped gently over the raised shin near the ankle, back straight, head level, a composed symmetrical posture with a serene direct gaze into the lens.",
+        "location": "Professional studio, seamless neutral light grey background, soft diffused lighting.",
+        "additional": "Sharp focus, high resolution, natural realistic skin, entire figure in frame, elevated editorial fashion photography."
+      },
+      {
+        "id": "ED7",
+        "name": "Kneeling Look Back",
+        "what": "Full body editorial catalogue photograph of a female fashion model as seen in the reference image, kneeling on the studio floor",
+        "pose": "Kneeling side-on to the camera and sitting back on her heels, both arms extended forward with palms flat on the floor, back in a long gentle curve, head turned over her shoulder toward the lens with a poised direct gaze.",
+        "location": "Evenly lit professional studio, seamless neutral white background, soft diffused lighting.",
+        "additional": "Sharp focus, high resolution, natural realistic skin, entire figure in frame, elevated editorial fashion photography."
+      },
+      {
+        "id": "ED8",
+        "name": "Plinth Perch, Forward Lean",
+        "what": "Full body editorial catalogue photograph of a female fashion model as seen in the reference image, seated on a white studio plinth",
+        "pose": "Perched on the edge of a tall white plinth, leaning forward with both hands gripping the edge between her knees, arms straight and shoulders raised slightly, one leg extended and the other bent back, gaze directed off-camera to the side in a thoughtful in-between moment.",
+        "location": "Professional studio, seamless white neutral background, soft diffused lighting, a single white rectangular plinth as the only prop.",
+        "additional": "Sharp focus, high resolution, natural realistic skin, elevated editorial fashion photography."
+      },
+      {
+        "id": "ED9",
+        "name": "Reach to Lens",
+        "what": "Close-up editorial catalogue photograph (framed from the chest up) of a female fashion model as seen in the reference image, shot from a slightly low angle",
+        "pose": "One arm reaching toward the camera with the hand soft and out of focus in the extreme foreground, chin tilted down with lips slightly parted, hair moving as if caught mid-gesture, a bold confrontational energy directed straight at the lens.",
+        "location": "Professional studio, seamless white neutral background, soft diffused lighting with a warm directional key.",
+        "additional": "Sharp focus on the face with the reaching hand as a natural foreground blur layer, high resolution, natural realistic skin, elevated editorial fashion photography, shallow depth of field."
+      },
+      {
+        "id": "ED10",
+        "name": "Crouch, Hand to Lips",
+        "what": "Full body editorial catalogue photograph of a female fashion model as seen in the reference image, crouched low",
+        "pose": "Crouched low with knees wide and elbows resting on them, one hand raised with the knuckles or sleeve edge resting lightly against her lips, chin tucked into the hand, gazing directly into the lens with soft intensity from under her brow.",
+        "location": "Professional studio, seamless neutral white background, soft diffused lighting.",
+        "additional": "Sharp focus, high resolution, natural realistic skin, entire figure in frame, elevated editorial fashion photography."
+      }
+    ]
+  }
+}
