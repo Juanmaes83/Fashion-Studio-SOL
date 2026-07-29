@@ -1,0 +1,461 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Hermes — On-Model Reel · Field Notes No. 20</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,300..900;1,9..144,300..900&family=Newsreader:ital,opsz,wght@0,6..72,300..600;1,6..72,300..500&family=JetBrains+Mono:wght@400;500;700&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --paper:#F1ECE2;--paper-2:#E9E2D4;--ink:#211C16;--ink-soft:#4A4136;--ink-faint:#7A6F5E;
+    --red:#C53A1F;--red-deep:#9A2C16;--amber:#C98A1E;--rule:#CBBFA9;--dark:#1B1611;--dark-2:#241D16;
+    --fashion:#A84A6B;
+  }
+  *{box-sizing:border-box;margin:0;padding:0}
+  html{scroll-behavior:smooth}
+  body{background:var(--paper);color:var(--ink);font-family:"Newsreader",Georgia,serif;
+    font-optical-sizing:auto;font-size:19px;line-height:1.62;-webkit-font-smoothing:antialiased;position:relative}
+  body::before{content:"";position:fixed;inset:0;z-index:0;pointer-events:none;opacity:.45;
+    background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='120' height='120'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='2' stitchTiles='stitch'/%3E%3CfeColorMatrix type='saturate' values='0'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='0.4'/%3E%3C/svg%3E");mix-blend-mode:multiply}
+  .wrap{position:relative;z-index:1;max-width:760px;margin:0 auto;padding:0 28px}
+  #bar{position:fixed;top:0;left:0;height:3px;background:var(--red);width:0;z-index:50}
+
+  .masthead{display:flex;justify-content:space-between;align-items:baseline;border-bottom:2px solid var(--ink);
+    padding:22px 0 10px;margin-top:26px;font-family:"JetBrains Mono",monospace;font-size:11.5px;
+    letter-spacing:.14em;text-transform:uppercase;color:var(--ink-soft)}
+  .masthead .brand{color:var(--red);font-weight:700}
+  .submast{display:flex;justify-content:space-between;font-family:"JetBrains Mono",monospace;font-size:10.5px;
+    letter-spacing:.1em;text-transform:uppercase;color:var(--ink-faint);padding:7px 0 0;border-bottom:1px solid var(--rule)}
+
+  .hero{padding:64px 0 30px}
+  .eyebrow{font-family:"JetBrains Mono",monospace;font-size:12px;letter-spacing:.22em;text-transform:uppercase;
+    color:var(--red);margin-bottom:26px}
+  h1{font-family:"Fraunces",serif;font-weight:600;font-size:clamp(40px,8vw,76px);line-height:.98;
+    letter-spacing:-.02em;margin-bottom:26px}
+  h1 em{font-style:italic;color:var(--red);font-weight:500}
+  .dek{font-size:22px;line-height:1.5;color:var(--ink-soft);max-width:60ch;font-weight:300}
+  .dek strong{color:var(--ink);font-weight:500}
+  .byline{margin-top:34px;padding-top:18px;border-top:1px solid var(--rule);font-family:"JetBrains Mono",monospace;
+    font-size:11px;letter-spacing:.08em;text-transform:uppercase;color:var(--ink-faint);display:flex;gap:26px;flex-wrap:wrap}
+  .byline span b{color:var(--ink);font-weight:500}
+
+  .why{background:var(--dark);color:#E9E2D4;border-radius:6px;padding:30px 28px;margin:46px 0;
+    box-shadow:0 18px 40px -22px rgba(0,0,0,.55)}
+  .why .wtag{font-family:"JetBrains Mono",monospace;font-size:11px;letter-spacing:.2em;text-transform:uppercase;
+    color:var(--fashion);margin-bottom:14px}
+  .why h2{color:#F4EFE4;font-family:"Fraunces",serif;font-weight:500;font-size:26px;line-height:1.15;
+    margin-bottom:16px;letter-spacing:-.01em}
+  .why p{color:#CFC4B0;margin-bottom:14px;font-size:18px}
+  .why p:last-child{margin-bottom:0}
+  .why p b{color:#fff;font-weight:600}
+
+  .pipeline{margin:40px 0;padding:26px 22px;background:var(--dark);border-radius:4px;
+    font-family:"JetBrains Mono",monospace;color:#E9E2D4;overflow-x:auto}
+  .pipeline .plabel{font-size:10px;letter-spacing:.2em;text-transform:uppercase;color:#8A7E6A;margin-bottom:16px}
+  .pipeline .flow{display:flex;align-items:center;gap:7px;font-size:11px;white-space:nowrap}
+  .pipeline .node{color:#F1ECE2}
+  .pipeline .arr{color:var(--red);font-weight:700}
+
+  section{padding:24px 0}
+  .kicker{font-family:"JetBrains Mono",monospace;font-size:11px;letter-spacing:.2em;text-transform:uppercase;
+    color:var(--red);margin-bottom:8px}
+  .stage-head{display:flex;align-items:flex-start;gap:20px;margin:8px 0 22px}
+  .stage-num{font-family:"Fraunces",serif;font-weight:600;font-size:54px;line-height:.8;color:var(--red);
+    flex-shrink:0;position:sticky;top:20px;font-variant-numeric:lining-nums;white-space:nowrap}
+  h2{font-family:"Fraunces",serif;font-weight:500;font-size:clamp(26px,4.2vw,36px);line-height:1.05;
+    letter-spacing:-.015em;padding-top:8px}
+  h2 em{font-style:italic;color:var(--red)}
+  h3{font-family:"Fraunces",serif;font-weight:600;font-size:22px;margin:28px 0 10px;letter-spacing:-.01em}
+  h4{font-family:"JetBrains Mono",monospace;font-size:13px;letter-spacing:.06em;text-transform:uppercase;
+    color:var(--fashion);margin:22px 0 8px}
+  p{margin:0 0 18px}
+  p strong{font-weight:500}
+  a{color:var(--red-deep);text-decoration:underline;text-underline-offset:3px;text-decoration-thickness:1px}
+  em.term{font-style:italic;color:var(--red-deep)}
+  code{font-family:"JetBrains Mono",monospace;font-size:.82em;background:var(--paper-2);padding:1px 6px;
+    border-radius:3px;color:var(--ink);border:1px solid var(--rule);word-break:break-word}
+  ul.clean{list-style:none;margin:6px 0 20px}
+  ul.clean li{position:relative;padding-left:24px;margin-bottom:11px}
+  ul.clean li::before{content:"—";position:absolute;left:0;color:var(--red);font-weight:700;font-family:"JetBrains Mono",monospace}
+  ul.clean li strong{font-weight:600}
+
+  blockquote{border-left:3px solid var(--red);padding:4px 0 4px 22px;margin:24px 0;font-size:21px;
+    line-height:1.45;color:var(--ink-soft);font-style:italic}
+  blockquote strong{color:var(--ink);font-style:normal;font-weight:600}
+  blockquote.prompt{border-left-color:var(--fashion);font-style:normal;font-size:15.5px;font-family:"JetBrains Mono",monospace;
+    line-height:1.6;color:var(--ink-soft);background:rgba(168,74,107,.07);padding:14px 18px;border-radius:0 4px 4px 0;margin:14px 0}
+  blockquote.prompt b{color:var(--fashion);font-weight:700}
+  blockquote.prompt .pl{font-family:"JetBrains Mono",monospace;font-size:10px;letter-spacing:.1em;
+    text-transform:uppercase;color:var(--fashion);display:block;margin-bottom:6px;font-weight:700}
+
+  .code{background:var(--dark);border-radius:6px;margin:22px 0;overflow:hidden;box-shadow:0 14px 30px -18px rgba(0,0,0,.5)}
+  .code-head{display:flex;justify-content:space-between;align-items:center;padding:10px 14px;background:var(--dark-2);
+    border-bottom:1px solid #36281d}
+  .dots{display:flex;gap:6px}
+  .dots i{width:10px;height:10px;border-radius:50%;display:block}
+  .dots i:nth-child(1){background:var(--red)}
+  .dots i:nth-child(2){background:var(--amber)}
+  .dots i:nth-child(3){background:#5a7a4a}
+  .lang{font-family:"JetBrains Mono",monospace;font-size:10.5px;letter-spacing:.1em;text-transform:uppercase;color:#8A7E6A}
+  .copy{background:none;border:1px solid #4a3a2a;color:#bdae97;font-family:"JetBrains Mono",monospace;font-size:10px;
+    letter-spacing:.08em;text-transform:uppercase;padding:4px 10px;border-radius:3px;cursor:pointer;transition:.15s}
+  .copy:hover{background:var(--red);border-color:var(--red);color:#fff}
+  .code pre{margin:0;padding:18px;overflow-x:auto;font-family:"JetBrains Mono",monospace;font-size:12px;
+    line-height:1.65;color:#D8CDB8;white-space:pre-wrap;word-break:break-word}
+  .code pre .s{color:#C9A06A}
+  .code pre .k{color:#D87B5C}
+  .code pre .c{color:#6f6557;font-style:italic}
+  .code pre .n{color:#9bb07f}
+  .code pre .arr{color:#D87B5C;font-weight:700}
+
+  .callout{border:1px solid var(--amber);background:rgba(201,138,30,.08);border-radius:5px;padding:20px 22px;margin:24px 0}
+  .callout .ctag{font-family:"JetBrains Mono",monospace;font-size:10.5px;letter-spacing:.16em;text-transform:uppercase;
+    color:var(--amber);font-weight:700;margin-bottom:10px;display:block}
+  .callout p:last-child{margin-bottom:0}
+  .callout.fashion{border-color:var(--fashion);background:rgba(168,74,107,.08)}
+  .callout.fashion .ctag{color:var(--fashion)}
+
+  .sl-block{border:2px dashed var(--red);border-radius:8px;padding:30px 28px;margin:34px 0;position:relative;
+    background:rgba(197,58,31,.04)}
+  .sl-stamp{position:absolute;top:-18px;right:24px;width:78px;height:78px;background:var(--red);color:#fff;
+    border-radius:6px;display:flex;flex-direction:column;align-items:center;justify-content:center;
+    font-family:"JetBrains Mono",monospace;font-size:12px;font-weight:700;letter-spacing:.05em;line-height:1.15;
+    transform:rotate(7deg);box-shadow:0 8px 22px -10px rgba(154,44,22,.7);text-align:center;border:2px solid #fff}
+  .sl-block h3{margin-top:0}
+  .sl-block .sl-foot{margin-top:18px;padding-top:16px;border-top:1px dashed var(--rule);font-family:"JetBrains Mono",monospace;font-size:12.5px}
+  .sl-block .sl-foot a{font-weight:700}
+
+  .postcard{background:linear-gradient(170deg,#fff 0%,#FBF6EC 100%);border:1px solid var(--rule);border-radius:6px;
+    padding:24px;margin:26px 0;position:relative;box-shadow:0 20px 40px -24px rgba(33,28,22,.4);
+    transform:rotate(-.5deg);transition:.3s}
+  .postcard:hover{transform:rotate(0deg) translateY(-3px)}
+  .pc-label{font-family:"JetBrains Mono",monospace;font-size:10px;letter-spacing:.14em;text-transform:uppercase;
+    color:var(--ink-faint);margin-bottom:6px}
+  .pc-copy{font-family:"Fraunces",serif;font-style:italic;font-size:18px;line-height:1.5;color:var(--ink-soft);
+    margin-top:14px;padding-left:16px;border-left:2px solid var(--paper-2)}
+  .pc-copy b{color:var(--red-deep);font-style:normal;font-weight:600}
+
+  .checklist{margin:20px 0}
+  .checklist .ci{display:flex;align-items:flex-start;gap:12px;padding:12px 0;border-bottom:1px solid var(--rule)}
+  .checklist .box{width:18px;height:18px;border:2px solid var(--ink);border-radius:3px;flex-shrink:0;margin-top:3px;position:relative}
+  .checklist .box::after{content:"✓";position:absolute;inset:-3px 0 0 1px;color:var(--red);
+    font-family:"JetBrains Mono",monospace;font-weight:700;font-size:15px}
+  .checklist .ci span{font-size:16.5px}
+
+  hr.div{border:none;border-top:1px solid var(--rule);margin:40px 0}
+  .pull{font-family:"Fraunces",serif;font-weight:400;font-style:italic;font-size:clamp(24px,4vw,32px);line-height:1.25;
+    color:var(--ink);text-align:center;padding:40px 10px;max-width:24ch;margin:30px auto}
+  .pull b{color:var(--red);font-style:normal;font-weight:600}
+
+  footer{margin-top:50px;padding:34px 0 70px;border-top:2px solid var(--ink);font-family:"JetBrains Mono",monospace;
+    font-size:11px;letter-spacing:.08em;text-transform:uppercase;color:var(--ink-faint);display:flex;
+    justify-content:space-between;flex-wrap:wrap;gap:16px}
+  footer .brand{color:var(--red);font-weight:700}
+
+  @media(max-width:640px){
+    body{font-size:18px}
+    .stage-num{font-size:38px;position:static}
+    .stage-head{gap:14px}
+    .sl-stamp{width:64px;height:64px;font-size:10px;right:16px}
+  }
+</style>
+</head>
+<body>
+<div id="bar"></div>
+<div class="wrap">
+
+  <!-- MASTHEAD -->
+  <div class="masthead">
+    <span><span class="brand">Hermes</span> · Field Notes</span>
+    <span>No. 20</span>
+  </div>
+  <div class="submast">
+    <span>Fashion · On-Model Reel</span>
+    <span>Free Build Guide</span>
+  </div>
+
+  <!-- HERO -->
+  <header class="hero">
+    <div class="eyebrow">Hermes — The On-Model Reel Bot</div>
+    <h1>Put a clothing store's <em>real clothes</em> on a model in a cinematic reel — and mail the owner the finished film.</h1>
+    <p class="dek">Most offline clothing stores have great clothes and almost no content, because a real shoot means a model, a photographer, a studio, and a stylist. Hermes builds the thing first: a cinematic reel of their own clothes on a real model, landing in their mailbox on a postcard with a QR to watch. <strong>You're not selling an idea — you're handing them the finished result and letting it sell itself.</strong></p>
+    <div class="byline">
+      <span>Stack · <b>Hermes · Google Places · Image Gen 2 · Seedance · Scribeless</b></span>
+      <span>Steps · <b>09</b></span>
+      <span>Principle · <b>deliver first</b></span>
+    </div>
+  </header>
+
+  <!-- BIG IDEA -->
+  <div class="why">
+    <div class="wtag">The big idea</div>
+    <h2>The owner scans the code, watches their own dress walking through a sunlit garden, and the only question left is "how do I get more of these."</h2>
+    <p>Instead of cold messaging a store and asking for a meeting, Hermes flips the pitch and builds the thing first — a cinematic reel of their own clothes on a real model.</p>
+    <p>That's a <b>warm lead that closed itself</b> before you ever spoke.</p>
+  </div>
+
+  <!-- WHY NOW -->
+  <section>
+    <p class="kicker">The timing</p>
+    <div class="stage-head"><div class="stage-num">§</div><h2>Why this works now</h2></div>
+    <ul class="clean">
+      <li><strong>The intent is everywhere and unclaimed.</strong> Every town has clothing stores with weak visuals. Nobody is systematically turning their racks into model reels.</li>
+      <li><strong>The assets are already public.</strong> Their clothes are on their website or in their Google listing photos. Everything you need is one scrape away.</li>
+      <li><strong>Generative video changed the math.</strong> Putting a specific garment on a believable model in a believable location used to need a production. Now it's a prompt — a custom per-store reel is finally cheap enough to make on spec and mail cold.</li>
+      <li><strong>A reel is the format that already wins.</strong> It's what the store would post anyway. You're giving them the exact thing their feed is missing.</li>
+    </ul>
+  </section>
+
+  <!-- AT A GLANCE -->
+  <div class="pipeline">
+    <div class="plabel">The system at a glance</div>
+    <div class="flow">
+      <span class="node">Places</span><span class="arr">→</span>
+      <span class="node">scrape</span><span class="arr">→</span>
+      <span class="node">pick&nbsp;piece</span><span class="arr">→</span>
+      <span class="node">extract&nbsp;garment</span><span class="arr">→</span>
+      <span class="node">on-model&nbsp;reel</span><span class="arr">→</span>
+      <span class="node">host&nbsp;+&nbsp;QR</span><span class="arr">→</span>
+      <span class="node">postcard</span><span class="arr">→</span>
+      <span class="node">warm&nbsp;lead</span>
+    </div>
+  </div>
+
+  <p>Hermes is the orchestrator — the brain that runs the loop and hands work between tools. Every box below is one tool doing one job.</p>
+
+  <hr class="div">
+
+  <!-- STEP 1 -->
+  <section>
+    <p class="kicker">Sourcing</p>
+    <div class="stage-head"><div class="stage-num">01</div><h2>Find the stores</h2></div>
+    <p>Use the Google Places API to pull clothing stores in any city. Text Search and Nearby Search both work — query by type and keyword: <code>clothing store</code>, <code>women's clothing store</code>, <code>boutique</code>, <code>dress shop</code>, stacked with a city or a lat/long radius so you sweep metro by metro.</p>
+    <p>Per place you get name, website, address, rating, review count, and listing photos. <strong>Save the place id</strong> so you never process the same store twice. Rotate the city and the keyword for an endless, fresh stream.</p>
+    <blockquote>Places finds the store. <strong>Scrapers go get the goods.</strong> Apify actors go deeper than the API — a store's full Shopify catalog or its Instagram grid, once Places hands you the website.</blockquote>
+  </section>
+
+  <!-- STEP 2 -->
+  <section>
+    <div class="stage-head"><div class="stage-num">02</div><h2>Qualify — keep the signal, drop the noise</h2></div>
+    <p>Not every store is worth a reel. Filter for the ones where good video obviously moves product:</p>
+    <ul class="clean">
+      <li>a real store with real inventory, not a dead listing</li>
+      <li>clothes that read well on a model — dresses, sets, statement pieces</li>
+      <li>reachable, so you can mail them or find a contact</li>
+    </ul>
+    <p>A vision model is perfect here — feed it the listing photos and the site, let it grade fit and likely interest, then keep or skip automatically.</p>
+  </section>
+
+  <!-- STEP 3 -->
+  <section>
+    <div class="stage-head"><div class="stage-num">03</div><h2>Get their clothing</h2></div>
+    <p>Two paths — Hermes picks based on what the store has:</p>
+    <h4>They have a website</h4>
+    <p>Most boutiques run on Shopify, which quietly exposes a clean product feed. Hitting <code>/products.json</code> returns every product with its catalog images, usually shot on white or on a model — the cleanest possible input. Scrape it, skip anything that isn't clothing (bags, jewelry, hats), and you have their whole rack as images.</p>
+    <div class="code">
+      <div class="code-head"><div class="dots"><i></i><i></i><i></i></div><span class="lang">http · shopify-feed</span><button class="copy">Copy</button></div>
+<pre>GET https://{store-domain}/products.json?limit=250
+<span class="c"># → products[].variants, products[].images[].src — their whole catalog</span></pre>
+    </div>
+    <h4>They don't have a usable site</h4>
+    <p>Fall back to the Google listing photos — stores and shoppers post shots of the racks and the window. Pull those and extract the clothing out of them. Either way the goal is the same: clean images of the actual garments this store sells.</p>
+  </section>
+
+  <!-- STEP 4 -->
+  <section>
+    <div class="stage-head"><div class="stage-num">04</div><h2>Pick the best piece</h2></div>
+    <p>You don't reel the whole catalog. You pick one hero piece — the thing most likely to stop a scroll and most representative of the brand. A vision model ranks the candidates on silhouette, color, and "would a person screenshot this."</p>
+    <blockquote>One store, one standout look. <strong>That's what becomes the reel.</strong></blockquote>
+  </section>
+
+  <!-- STEP 5 -->
+  <section>
+    <p class="kicker">The prep</p>
+    <div class="stage-head"><div class="stage-num">05</div><h2>Extract the garment</h2></div>
+    <p>Catalog and listing photos are messy — a model's face, a busy store, a dress form, a phone in a mirror. Before you can put the garment on a fresh model cleanly, isolate it with <strong>ChatGPT Image Generation (Image Gen 2)</strong> as an edit step. Pass the product photo and lift out just the garment:</p>
+    <blockquote class="prompt"><span class="pl">Garment isolation · Image Gen 2</span>Isolate the single garment only. Remove the model, face, hands, mannequin, and the entire background. Present it as a clean ghost mannequin product shot, front facing, the whole piece centered on pure seamless white, soft even studio light. Preserve the exact color, print, fabric, neckline, straps, and hem. Photoreal. No text, no logo, no extra objects.</blockquote>
+    <p>Now you have a pristine, isolated garment — the perfect controllable input for the next step, and it doubles as the <strong>"before"</strong> you can show alongside the finished reel.</p>
+  </section>
+
+  <!-- STEP 6 -->
+  <section>
+    <p class="kicker">The transformation</p>
+    <div class="stage-head"><div class="stage-num">06</div><h2>Put it on a model, render the reel</h2></div>
+    <p>This is the moment. Take the clean garment and generate a cinematic video of it worn by a real-looking model, in a real location, shot like an ad. Use <strong>Seedance 2.0</strong>, passing the isolated garment as reference:</p>
+    <blockquote class="prompt"><span class="pl">Cinematic reel · Seedance 2.0</span>Vertical 9:16 cinematic fashion ad, about 12 seconds, no audio. A single model wears the exact dress from the reference, preserving its color, print, and cut. Bright location that contrasts with the dress so it pops. Multiple angles cut together like a real ad: a wide establishing shot, a walk toward camera, a slow turn as the fabric moves, a low angle hero shot, and a tight detail of the fabric. Bright, refined, premium. Keep the top and bottom of the frame clear. No text, no logos, no other people.</blockquote>
+    <div class="callout fashion">
+      <span class="ctag">⌖ Two craft notes that make or break it</span>
+      <p style="margin-bottom:8px"><strong>Pin the garment.</strong> Tell the model to preserve the exact dress from the reference — its color, print, cut, and length. The whole pitch dies if the garment drifts.</p>
+      <p><strong>Strip the audio and keep it tight.</strong> A clean, short, muted vertical clip is exactly what drops into a feed. Lock the same model across a store's looks so the set feels like one shoot, and tune the location per store.</p>
+    </div>
+  </section>
+
+  <!-- STEP 7 -->
+  <section>
+    <div class="stage-head"><div class="stage-num">07</div><h2>Host it and make a QR</h2></div>
+    <p>Drop the reel somewhere it can be watched instantly at a URL — one page per store. Generate a QR that points to it. That QR is what turns a paper postcard into a click. <strong>Scribeless generates the tracked QR for you</strong> in the next step from this page URL.</p>
+  </section>
+
+  <!-- STEP 8 — SCRIBELESS FULLY DETAILED -->
+  <section>
+    <p class="kicker">Outreach — the knock on the door</p>
+    <div class="stage-head"><div class="stage-num">08</div><h2>Mail the postcard with <em>Scribeless</em></h2></div>
+    <p>Hermes composes a postcard — a striking frame from the reel on the front, the store's name, a short line, and the QR to watch — then mails it to the owner by name. The store gets a real piece of mail with their own clothes already turned into a film. Here's the exact build.</p>
+
+    <h3>1 · Compose the card, render to print spec</h3>
+    <p>Pull a striking frame from the reel, compose the front (frame + store name + one line), and normalize to <strong>1875 × 1275</strong> (4×6 @ 300 dpi). Optionally run the isolated garment "before" small alongside the reel still so the transformation reads at a glance.</p>
+    <div class="code">
+      <div class="code-head"><div class="dots"><i></i><i></i><i></i></div><span class="lang">ts · render-card.ts</span><button class="copy">Copy</button></div>
+<pre><span class="k">import</span> sharp <span class="k">from</span> <span class="s">"sharp"</span>;
+
+<span class="c">// heroFrame = a striking still pulled from the rendered reel</span>
+<span class="k">const</span> frontPng = (<span class="k">await</span> sharp(heroFrame)
+  .resize(<span class="n">1875</span>, <span class="n">1275</span>, { fit: <span class="s">"cover"</span> })
+  .png().toBuffer()
+).toString(<span class="s">"base64"</span>);</pre>
+    </div>
+
+    <h3>2 · Push the recipient to Scribeless</h3>
+    <p>The endpoint is <code>POST /api/recipients</code> on <code>platform.scribeless.co</code>, authed with an <strong><code>X-API-Key</code> header</strong> (not Bearer). The frame goes <strong>base64-inlined as an <code>&lt;img&gt;</code> inside <code>variables.html</code></strong>; pass the reel page URL in the <strong><code>qrCode</code> field</strong> and Scribeless generates + scan-tracks the code. Address it to the store at the Places address — to the owner by name when you have it. The <code>campaignId</code> is your studio's campaign — the sender brand.</p>
+    <div class="code">
+      <div class="code-head"><div class="dots"><i></i><i></i><i></i></div><span class="lang">bash · scribeless.sh</span><button class="copy">Copy</button></div>
+<pre>curl -X POST https://platform.scribeless.co/api/recipients \
+  -H <span class="s">"X-API-Key: $SCRIBELESS_KEY"</span> \
+  -H <span class="s">"Content-Type: application/json"</span> \
+  -d <span class="s">'{
+    "campaignId": "{{studioCampaignId}}",
+    "data": [
+      {
+        "firstName": "{{ownerFirstName}}",
+        "company": "{{storeName}}",
+        "address": {
+          "line1": "{{storeAddress}}",
+          "city": "{{city}}",
+          "state": "{{state}}",
+          "postalCode": "{{zip}}",
+          "country": "US"
+        },
+        "variables": {
+          "html": {
+            "front": "&lt;img src=\"data:image/png;base64,{{frontPng}}\" /&gt;"
+          },
+          "qrCode": "https://yourstudio.com/reel/{{placeIdSlug}}"
+        }
+      }
+    ]
+  }'</span></pre>
+    </div>
+    <p style="margin-top:-2px"><strong>Field-name gotchas:</strong> <code>postalCode</code> (not <code>postal_code</code>), the address is a nested object, and it's the store's public Places address — no records lookup. If Places only gave you the store name, address to <code>company</code> and drop <code>firstName</code>; pull the owner name from the site's About page when you want it on the card.</p>
+
+    <div class="callout">
+      <span class="ctag">★ The preview is free — your doc already leans on this</span>
+      <p>Keep the campaign in <strong>Pending</strong> and Scribeless renders a full proof of every card — addressed, branded, QR live — <strong>without printing or charging.</strong> Build the whole metro's worth, see the proof before anything goes to print, and flip live only on the stores worth the postage.</p>
+    </div>
+
+    <h3>3 · What Scribeless handles for you</h3>
+    <ul class="clean">
+      <li><strong>Real handwritten addressing</strong> to the owner by name — gets the envelope opened instead of binned.</li>
+      <li><strong>Your designed image as a variable</strong>, so the reel frame from their own clothes is exactly what mails.</li>
+      <li><strong>Built-in QR endpoint</strong> — pass the reel page URL and Scribeless generates, prints, and scan-tracks the code, so a scan flags the warm lead (Step 9).</li>
+      <li><strong>Per-campaign sender branding</strong> as your studio — one campaign, every card mails as you.</li>
+      <li><strong>Webhooks</strong> for delivery and scan events, so Hermes knows the moment the card lands or the reel is watched.</li>
+      <li><strong>An MCP server</strong> — <code>npx skills add scribeless/skills</code> — so the mailout fires straight from Hermes.</li>
+    </ul>
+
+    <div class="sl-block">
+      <div class="sl-stamp">SEND<br>IT</div>
+      <h3>Wire up Scribeless</h3>
+      <p style="margin-bottom:6px">A postcard showing the owner their own dress on a model in a sunlit garden, with a QR to the full reel. Their clothes, already turned into a film, in their mailbox.</p>
+      <div class="sl-foot">→ <a href="https://scribeless.co/programmatic-direct-mail">scribeless.co/programmatic-direct-mail</a></div>
+    </div>
+
+    <div class="postcard">
+      <div class="pc-label">Front line · short, let the reel do the talking</div>
+      <h3 style="margin-top:4px">What sells the card</h3>
+      <p style="margin-bottom:6px">A striking reel frame of their own piece, the store name, a QR that plays the film.</p>
+      <div class="pc-copy">
+        <b>{{storeName}}</b> — we put your [piece] on a model. Scan to watch the reel. — made this for you, no charge.
+      </div>
+    </div>
+  </section>
+
+  <!-- STEP 9 -->
+  <section>
+    <p class="kicker">The close</p>
+    <div class="stage-head"><div class="stage-num">09</div><h2>The warm lead loop</h2></div>
+    <p>The QR is the signal. When the owner scans it, you know they watched — and that scan is your cue to follow up, or to let an automated reply do it. You're not chasing strangers. You're talking to owners who just watched their own store look incredible.</p>
+  </section>
+
+  <!-- AUTONOMOUS -->
+  <section>
+    <p class="kicker">The engine</p>
+    <div class="stage-head"><div class="stage-num">∞</div><h2>Making it autonomous</h2></div>
+    <div class="code">
+      <div class="code-head"><div class="dots"><i></i><i></i><i></i></div><span class="lang">yaml · hermes-loop</span><button class="copy">Copy</button></div>
+<pre><span class="n">1</span>  Places sweeps on a schedule   <span class="arr">→</span> new stores into a queue
+<span class="n">2</span>  each store qualified          <span class="arr">→</span> kept or dropped automatically
+<span class="n">3</span>  kept stores scraped           <span class="arr">→</span> hero piece chosen
+<span class="n">4</span>  garment isolated              <span class="arr">→</span> rendered into a reel
+<span class="n">5</span>  reel hosted + QR generated    <span class="arr">→</span> postcard composed
+<span class="n">6</span>  Scribeless mails it           <span class="arr">→</span> scan webhook flags the warm leads</pre>
+    </div>
+    <p>Memory is a database of processed place ids, so the loop never repeats a store. Set it running and it works the whole funnel — from a map pin to a mailbox — on its own. You just review the output and keep the bar high.</p>
+  </section>
+
+  <!-- PULL -->
+  <div class="pull">From a map pin to a mailbox, <b>on autopilot.</b></div>
+
+  <!-- CORE PRINCIPLE -->
+  <section>
+    <div class="callout fashion">
+      <span class="ctag">The core principle</span>
+      <p style="margin-bottom:0">Don't pitch. Deliver first. Find a store that already has beautiful clothes and a quiet feed, build the exact thing they're missing from their own racks, and put it in their hands done. That's the entire edge — and it's why this works in any city, for any store, on autopilot.</p>
+    </div>
+  </section>
+
+  <!-- CHECKLIST -->
+  <section>
+    <p class="kicker">Ship it</p>
+    <div class="stage-head"><div class="stage-num">✓</div><h2>Build checklist</h2></div>
+    <div class="checklist">
+      <div class="ci"><div class="box"></div><span>Find stores — Google Places by type + keyword + city, save the place id</span></div>
+      <div class="ci"><div class="box"></div><span>Qualify — real inventory, model-friendly pieces, reachable; vision grades it</span></div>
+      <div class="ci"><div class="box"></div><span>Get the clothing — Shopify <code>/products.json</code>, listing photos as fallback</span></div>
+      <div class="ci"><div class="box"></div><span>Pick the hero piece — vision ranks silhouette, color, screenshot-ability</span></div>
+      <div class="ci"><div class="box"></div><span>Extract garment — Image Gen 2 ghost mannequin on seamless white</span></div>
+      <div class="ci"><div class="box"></div><span>Render the reel — Seedance 2.0, 9:16, pin the garment, multi-angle, muted</span></div>
+      <div class="ci"><div class="box"></div><span>Host + QR — one page per store, Scribeless generates the tracked QR</span></div>
+      <div class="ci"><div class="box"></div><span>Mail — Scribeless, <code>X-API-Key</code>, base64 PNG in <code>variables.html</code>, <code>qrCode</code> to the reel</span></div>
+      <div class="ci"><div class="box"></div><span>Warm lead loop — scan webhook flags watchers, follow up</span></div>
+      <div class="ci"><div class="box"></div><span>Autonomous — Hermes on a schedule, place-id memory so it never repeats a store</span></div>
+    </div>
+  </section>
+
+  <!-- FOOTER -->
+  <footer>
+    <span><span class="brand">Hermes</span> Field Notes · No. 20</span>
+    <span>The On-Model Reel Bot · Deliver First</span>
+  </footer>
+
+</div>
+
+<script>
+  const bar = document.getElementById('bar');
+  addEventListener('scroll', () => {
+    const h = document.documentElement;
+    bar.style.width = (h.scrollTop) / (h.scrollHeight - h.clientHeight) * 100 + '%';
+  });
+  document.querySelectorAll('.copy').forEach(btn => {
+    btn.addEventListener('click', () => {
+      const code = btn.closest('.code').querySelector('pre').innerText;
+      navigator.clipboard.writeText(code).then(() => {
+        const t = btn.textContent; btn.textContent = 'Copied'; btn.style.background = '#C53A1F'; btn.style.color = '#fff';
+        setTimeout(() => { btn.textContent = t; btn.style.background = ''; btn.style.color = ''; }, 1400);
+      });
+    });
+  });
+</script>
+</body>
+</html>
