@@ -1,0 +1,126 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://fashion-studio-sol.local/schemas/pose-library.schema.json",
+  "title": "Fashion Studio SOL Pose Library",
+  "type": "object",
+  "required": [
+    "schemaVersion",
+    "libraryId",
+    "title",
+    "status",
+    "source",
+    "reference",
+    "poses"
+  ],
+  "properties": {
+    "schemaVersion": {
+      "type": "string"
+    },
+    "libraryId": {
+      "type": "string"
+    },
+    "title": {
+      "type": "string"
+    },
+    "status": {
+      "type": "string"
+    },
+    "source": {
+      "type": "object",
+      "required": [
+        "type",
+        "capturedAt",
+        "transcriptionPolicy"
+      ],
+      "properties": {
+        "type": {
+          "type": "string"
+        },
+        "capturedAt": {
+          "type": "string"
+        },
+        "transcriptionPolicy": {
+          "type": "string"
+        }
+      },
+      "additionalProperties": false
+    },
+    "reference": {
+      "type": "object",
+      "required": [
+        "id",
+        "name",
+        "prompt"
+      ],
+      "properties": {
+        "id": {
+          "type": "string"
+        },
+        "name": {
+          "type": "string"
+        },
+        "prompt": {
+          "type": "string"
+        }
+      },
+      "additionalProperties": false
+    },
+    "poses": {
+      "type": "object",
+      "required": [
+        "ecommerce",
+        "editorial"
+      ],
+      "properties": {
+        "ecommerce": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/pose"
+          }
+        },
+        "editorial": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/pose"
+          }
+        }
+      },
+      "additionalProperties": false
+    }
+  },
+  "$defs": {
+    "pose": {
+      "type": "object",
+      "required": [
+        "id",
+        "name",
+        "what",
+        "pose",
+        "location",
+        "additional"
+      ],
+      "properties": {
+        "id": {
+          "type": "string"
+        },
+        "name": {
+          "type": "string"
+        },
+        "what": {
+          "type": "string"
+        },
+        "pose": {
+          "type": "string"
+        },
+        "location": {
+          "type": "string"
+        },
+        "additional": {
+          "type": "string"
+        }
+      },
+      "additionalProperties": false
+    }
+  },
+  "additionalProperties": false
+}
