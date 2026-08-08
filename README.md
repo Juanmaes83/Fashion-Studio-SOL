@@ -1,70 +1,87 @@
 # Fashion Studio SOL
 
-> Plataforma de inteligencia, creación y publicación para moda.
+> Plataforma de inteligencia, creación, consistencia visual y publicación para moda.
 >
-> Este README es el **documento maestro de continuidad** del proyecto. Debe permitir que cualquier nueva sesión, desarrollador o agente de IA entienda qué estamos construyendo, qué activos existen, qué repositorio hace cada cosa, cómo deben integrarse y qué fases faltan.
+> Este README es el **documento maestro de continuidad**. Debe permitir que otra sesión, un desarrollador o un agente de IA entienda qué estamos construyendo, qué activos existen, qué hace cada repositorio, cómo se integra y qué trabajo falta sin depender de conversaciones anteriores.
 
 ---
 
-## Estado del proyecto — 2026-07-17
+## Estado del proyecto — 2026-07-29
 
-| Fase | Estado |
+| Área / fase | Estado verificable |
 |---|---|
-| **Fase 0** — Consolidación documental y auditoría | ✅ Completada y fusionada en `main` (PR #2). Ver `docs/AUDIT-2026-07-13.md`, `docs/THIRD_PARTY.md`, `docs/ADR/0001` |
-| **Fase 1** — Foundation e integración de núcleos | ✅ Completada: pipeline real de Wardrobe validado de extremo a extremo (`docs/EXECUTION-WARDROBE-CORE-2026-07-17.md`), `fashion-schema` v0.1, exportador Wardrobe→MIRRORA, y MIRRORA consumiendo el catálogo real con Outfit Studio por categorías (MIRRORA PR #1 fusionado) |
-| **Fase 2** — Persistencia y pipeline profesional | ⏳ **Pendiente** (JSON local + localStorage siguen siendo la persistencia actual; no es la solución definitiva) |
-| **Fase 3** — Ontología V1 | ✅ Consolidada (contrato canónico único, CI verde). Ver `docs/CONSOLIDATION-3-4.md` |
-| **Fase 4** — Outfit Layer | ✅ Consolidada (creación/revisión/publicación con validación fail-closed). Ver `docs/CONSOLIDATION-3-4.md` |
-| Fase 5 — Website Builder MVP | Posterior. Investigación previa registrada: inventariar y comparar los builders existentes en los repositorios del propietario antes de elegir base |
-| Fases 6-10 | Según roadmap |
+| **Fase 0 — Consolidación documental y auditoría** | ✅ Fusionada en `main` mediante PR #2. Existen auditoría, terceros y ADR de integración. |
+| **Fase 1 — Foundation Wardrobe + MIRRORA** | ✅ Consolidada: pipeline Wardrobe validado, `fashion-schema` v0.1, exportador Wardrobe→MIRRORA y catálogo real en MIRRORA. |
+| **Fase 2 — Persistencia y pipeline profesional** | 🟠 Fases 2A–2F implementadas en el **PR #3 Draft** (`phase-2/persistence-foundation`); 2G y validación final siguen pendientes. No confundir trabajo en PR con código ya fusionado en `main`. |
+| **Fase 3 — Ontología V1** | ✅ Contrato canónico consolidado y validado. |
+| **Fase 4 — Outfit Layer** | ✅ Creación, revisión y publicación consolidadas con validación fail-closed. |
+| **Fase 4B — Pose Library & Model Consistency Engine** | 🟠 Especificación, transcripción canónica, JSON y JSON Schema incorporados en una rama de revisión. Implementación de runtime pendiente. |
+| **Fase 5 — Website Builder MVP** | ⏳ Pendiente. Antes debe auditarse el inventario de builders del propietario y elegirse una sola base modular. |
+| **Brand Acquisition & Spec Campaign Engine** | 🧭 Documentado en **PR #5 Draft**, dependiente del PR #3. Es una pista paralela de crecimiento, no sustituye la prioridad de persistencia. |
+| **Fases 6–10** | ⏳ Según roadmap de este documento. |
+
+### Pull requests abiertos relevantes
+
+- **PR #3:** `phase-2/persistence-foundation` → `main`. Plataforma persistente 2A–2F, todavía Draft.
+- **PR #5:** `feature/brand-acquisition-spec-campaign-engine` → `phase-2/persistence-foundation`. Documentación de captación B2B, todavía Draft y dependiente del PR #3.
+- La integración del **Pose Library & Model Consistency Engine** debe permanecer en una rama y PR independientes para no acoplarse innecesariamente al PR #3.
 
 ---
 
 ## 1. Visión
 
-Fashion Studio SOL debe convertir fotografías, catálogos y activos de una marca en una experiencia de moda completa:
+Fashion Studio SOL debe convertir fotografías, catálogos y activos de una marca en un sistema operativo visual y comercial para moda:
 
 ```text
-crear proyecto
+crear proyecto y marca
 → importar fotografías o catálogo
-→ detectar y reconstruir prendas
-→ revisar y enriquecer el catálogo
-→ crear outfits y contenido editorial
-→ definir cómo se muestran prendas y looks
-→ generar una web de moda
-→ previsualizarla
-→ publicarla
-→ medir interacción y conversión
+→ detectar, reconstruir y revisar prendas
+→ enriquecer el catálogo con datos fiables
+→ crear outfits
+→ registrar modelos y bibliotecas de poses
+→ generar contenido e-commerce, editorial y de campaña
+→ revisar identidad, prenda, pose, anatomía y framing
+→ configurar una web de moda
+→ previsualizar y publicar
+→ medir interacción, conversión y coste operativo
 ```
 
-En una segunda etapa incorporará:
+Objetivo final:
+
+> **AI Fashion CMS + Wardrobe Intelligence + Outfit Engine + Pose Library & Model Consistency Engine + Fashion Website Builder + Visual Content Generator + Ecommerce Personalization Platform.**
+
+En fases posteriores podrá añadir:
 
 ```text
+virtual try-on mediante gateway intercambiable
++
 recomendación según clima y contexto
 +
 movimiento dinámico de tejidos y prendas
 +
-virtual try-on mediante proveedores intercambiables
+SaaS multicliente, cuotas y facturación
 ```
 
-Fashion Studio SOL no es solo un armario digital ni un generador de imágenes. El objetivo final es un:
-
-> **AI Fashion CMS + Wardrobe Intelligence + Outfit Engine + Fashion Website Builder + Visual Content Generator + Ecommerce Personalization Platform.**
+Estas capacidades posteriores no deben bloquear la validación inicial.
 
 ---
 
-## 2. Decisiones estratégicas ya aprobadas
+## 2. Decisiones estratégicas aprobadas
 
-1. **`Fashion-Studio-SOL` es el repositorio principal y canónico.**
-2. **Wardrobe será el núcleo de ingesta, extracción, revisión y gestión de prendas.**
-3. **MIRRORA será la base de la experiencia de consumidor, looks, wishlist, QR, carrito y configuración white-label.**
-4. La falta inicial de una interfaz completa de outfits no bloquea el MVP: se podrán importar imágenes locales, generar outfits mediante skill y asociarlos posteriormente a las prendas.
-5. El constructor de webs se construirá mediante **secciones configurables y plantillas**, no intentando replicar Webflow desde el principio.
-6. La arquitectura SaaS completa, multitenancy y facturación se implementarán después de validar el producto.
-7. Antes de SaaS sí deben resolverse la persistencia inconsistente, los uploads, los jobs, las pruebas y la separación entre módulos.
-8. La ontología crecerá de forma progresiva. Se implementará una **V1 suficiente y extensible**, no una taxonomía gigantesca antes de validar.
-9. Clima y telas dinámicas pertenecen a una fase posterior y no bloquearán la validación inicial.
-10. Ningún repositorio, modelo, checkpoint o dataset entrará en producción sin auditoría de licencia y uso comercial.
+1. **`Juanmaes83/Fashion-Studio-SOL` es el repositorio principal y la fuente de verdad del producto integrado.**
+2. **Wardrobe** es el núcleo de ingesta, extracción, reconstrucción, revisión y gestión de prendas.
+3. **MIRRORA Style Studio** es la base de la experiencia de consumidor, looks, wishlist, QR, carrito y primera consola white-label.
+4. **Pose Library & Model Consistency Engine** es un módulo propio de primer nivel, no una carpeta informal de prompts.
+5. Producto, identidad, prendas, outfits, poses y medios generados son verdades distintas y deben permanecer separadas.
+6. Los prompts canónicos no se “mejoran” silenciosamente. Cualquier cambio exige una nueva versión.
+7. El Website Builder será inicialmente estructurado por secciones y plantillas; no intentará replicar Webflow, Shopify y Canva a la vez.
+8. SaaS, multitenancy y facturación se implementarán después de validar el flujo completo.
+9. Antes del SaaS sí deben resolverse persistencia, storage, uploads, jobs, reintentos, costes, pruebas y trazabilidad.
+10. La ontología crecerá progresivamente: una V1 suficiente y extensible antes que una taxonomía gigantesca.
+11. Clima y telas dinámicas son posteriores y no bloquean el MVP.
+12. Ningún código, modelo, checkpoint o dataset entra en producción sin revisión de licencia y uso comercial.
+13. Una imagen atractiva no se aprueba si altera identidad, prenda, pose, anatomía o verdad comercial.
+14. Ninguna imagen generada demuestra talla, fit, caída física real o comodidad.
 
 ---
 
@@ -72,59 +89,46 @@ Fashion Studio SOL no es solo un armario digital ni un generador de imágenes. E
 
 ### 3.1 Fashion Studio — aplicación interna
 
-Utilizada por la marca, diseñador, tienda o equipo de marketing.
+Para marcas, diseñadores, tiendas, estilistas y equipos de marketing:
 
-Funciones objetivo:
-
-- Crear proyectos y colecciones.
-- Importar fotografías, carpetas y catálogos.
-- Detectar prendas.
-- Revisar crops y reconstrucciones.
-- Editar metadatos.
-- Generar imágenes de producto y editoriales.
-- Crear y gestionar outfits.
-- Elegir modelos de presentación.
-- Construir la web de moda.
-- Previsualizar y publicar.
-- Revisar jobs, costes, errores y QA.
+- proyectos, marcas y colecciones;
+- importación de fotografías, carpetas y catálogos;
+- detección, crops, cut-outs y reconstrucción de prendas;
+- revisión humana y edición de metadatos;
+- outfit builder y generación de looks;
+- registro de modelos, referencias y consentimiento;
+- biblioteca de poses e-commerce y editoriales;
+- generación y revisión de contenido;
+- campañas y assets comerciales;
+- configuración de storefronts;
+- preview y publicación;
+- operaciones, jobs, costes, errores y QA.
 
 ### 3.2 Fashion Storefront — experiencia pública
 
-Utilizada por el consumidor final.
-
-Funciones objetivo:
-
-- Home de marca.
-- Colecciones.
-- Fichas de producto.
-- Looks y lookbooks.
-- Shop the Look.
-- Wishlist.
-- Outfit builder.
-- Avatar editorial.
-- Virtual try-on opcional.
-- QR y handoff entre escaparate, móvil y carrito.
-- Recomendaciones según clima en fases posteriores.
+- home y colecciones;
+- fichas de producto;
+- lookbooks y Shop the Look;
+- wishlist y looks guardados;
+- outfit builder;
+- contenido editorial y campañas;
+- avatar editorial;
+- QR y handoff entre escaparate, móvil y carrito;
+- try-on opcional con consentimiento y limitaciones explícitas;
+- recomendación climática en fases posteriores.
 
 ### 3.3 Brand Console / Website Builder
 
-Utilizada para configurar y publicar experiencias white-label.
-
-Funciones objetivo:
-
-- Identidad visual.
-- Tema y design tokens.
-- Catálogo y productos activos.
-- Plantillas.
-- Secciones configurables.
-- Orden y visibilidad de secciones.
-- CTA, carrito y campañas.
-- Preview responsive.
-- Publicación.
+- identidad visual y design tokens;
+- temas y plantillas;
+- catálogo y outfits activos;
+- secciones configurables;
+- orden, visibilidad y layouts;
+- CTA, carrito, campañas y recompensas;
+- preview desktop, tablet y móvil;
+- publicación de sitios.
 
 ### 3.4 Operations Console
-
-Utilizada para supervisar el procesamiento.
 
 ```text
 upload
@@ -133,151 +137,131 @@ upload
 → garment generation
 → background cleanup
 → garment QA
-→ modeled image
+→ model/pose generation
+→ consistency QA
 → outfit
 → storefront
 → publish
 ```
 
-Cada job debe mostrar estado, duración, coste, proveedor, intentos, errores y acciones de recuperación.
+Cada job debe mostrar estado, proveedor, modelo/version, duración, coste, intentos, errores, inputs, outputs, decisión de revisión y recuperación.
+
+### 3.5 Growth Console — pista posterior
+
+Documentada en PR #5 para el flujo:
+
+```text
+Brand Discovery
+→ Qualification
+→ Rights & Consent Gate
+→ Product Ingestion
+→ Spec Campaign
+→ Human QA
+→ Private Campaign Landing
+→ Outreach
+→ Engagement Signals
+→ CRM / Sales Handoff
+→ Brand Onboarding
+```
+
+Debe permanecer separada del Production Plane y no puede iniciar generación sin derechos y consentimiento válidos.
 
 ---
 
-## 4. Estado actual real
+## 4. Estado real: cuánto existe y cuánto está integrado
 
-No partimos desde cero. Existen dos núcleos funcionales complementarios y varios activos auxiliares.
+No partimos desde cero. Existen núcleos funcionales y varios activos útiles, pero un repositorio clonado no equivale a un módulo integrado.
 
-### Evaluación aproximada
-
-| Área | Estado estimado |
+| Área | Evaluación de prototipos antes de la consolidación completa |
 |---|---:|
-| Ingesta y gestión de prendas | 75–80 % del prototipo |
-| Experiencia de consumidor | 60–70 % del prototipo |
+| Ingesta y gestión de prendas | 75–80 % |
+| Experiencia de consumidor | 60–70 % |
 | Outfits | 45–55 % |
-| Constructor de webs | 20–30 % |
+| Website Builder | 20–30 % |
 | Virtual try-on comercial | 10–20 % |
 | MVP integrado completo | ~45 % |
-| Superficies funcionales repartidas en prototipos | ~65 % |
+| Superficies funcionales repartidas | ~65 % |
 
-Estas cifras no significan que todo esté conectado. Actualmente los activos no comparten aún una base de datos, esquema, jobs, publicación ni arquitectura común.
+Desde entonces, Fases 1, 3 y 4 han avanzado, y Fase 2A–2F existe en PR #3. Aun así, no debe afirmarse que todo está en producción o fusionado: la comprobación correcta se hace sobre rama, PR, tests y flujo extremo a extremo.
 
 ---
 
-## 5. Mapa de repositorios y responsabilidades
+## 5. Mapa de módulos y responsabilidades
 
-### 5.1 Repositorios núcleo
+| Módulo | Responsabilidad | Fuente principal |
+|---|---|---|
+| **Fashion Schema** | Contratos compartidos de prendas, outfits, modelos, poses, assets, jobs, campañas y storefronts | Fashion Studio SOL |
+| **Wardrobe Core** | Ingesta, detección, crops, cut-outs, reconstrucción, metadatos y revisión | `Juanmaes83/wardrobe` |
+| **Image Pipeline** | Procesamiento de imagen, chroma, fondo, render modelado y adaptadores | Wardrobe + servicios propios |
+| **Outfit Core / Engine** | Relaciones entre prendas, styling, reglas, scoring, creación y aprobación | Fashion Studio SOL + skills Wardrobe |
+| **Pose Library & Model Consistency Engine** | Identidad canónica, poses versionadas, generación, QA, aprobación y procedencia | Módulo canónico nuevo |
+| **MIRRORA Experience** | Descubrimiento, looks, wishlist, QR, handoff y conversión | `Juanmaes83/MIRRORA-Style-Studio` |
+| **AI Closet Engine** | Patrones portables de armario, canvas de looks, categorización y cliente de try-on | `Juanmaes83/ai-closet` como referencia/adaptación |
+| **Brand Console** | Configuración white-label, campañas, catálogo y evolución hacia builder | MIRRORA + desarrollo propio |
+| **Website Builder** | Secciones, themes, merchandising, preview y publicación | Desarrollo propio tras auditar builders |
+| **Try-On Gateway** | Consentimiento, proveedor intercambiable, cola, TTL, purge, auditoría y QA | Servicio propio; repos de investigación solo benchmark |
+| **Prompt QA** | Rúbricas, defectos, reparación dirigida y benchmark visual | `aiclothswap-showcase` + reglas propias |
+| **Image Enhancement** | Upscale/mejora opcional mediante adaptador aislado | Servicio propio; Clarity solo referencia jurídica/técnica |
+| **Operations Console** | Visualización de jobs, pasos, errores, costes y recuperación | Desarrollo propio; `llmd-flow-visualizer` como patrón |
+| **Publishing** | Preview, assets aprobados, deploy y URLs | Servicio propio |
+| **Growth / Spec Campaign Engine** | Captación B2B, campañas privadas y handoff comercial | Documentado en PR #5 |
+
+---
+
+## 6. Inventario de repositorios y cómo integrarlos
+
+Que un repositorio aparezca aquí **no lo convierte en dependencia de producción**.
+
+### 6.1 Repositorios núcleo
 
 #### `Juanmaes83/Fashion-Studio-SOL`
 
-**Rol:** repositorio principal y producto integrado.
+**Hace:** producto integrado, contratos, decisiones, módulos, documentación, tests y roadmap.
 
-Debe contener progresivamente:
+**Integra:** Wardrobe, MIRRORA y los módulos propios mediante contratos; no copiando indiscriminadamente todos los repositorios.
 
-- Aplicaciones principales.
-- Paquetes compartidos.
-- Esquema de moda.
-- Servicios de procesamiento.
-- Website builder.
-- Documentación de arquitectura.
-- Tests.
-- Registro de licencias y decisiones.
-
-**No debe convertirse** en una copia indiscriminada de todos los repositorios auxiliares.
-
----
+**Decisión:** fuente de verdad canónica.
 
 #### `Juanmaes83/wardrobe`
 
-**Upstream original:** `tandpfun/wardrobe`  
-**Licencia:** MIT.
+**Upstream:** `tandpfun/wardrobe`.  
+**Licencia:** MIT; conservar atribución e historial.
 
-**Rol:** Wardrobe Core.
+**Hace:**
 
-Aporta:
+- React/Vite y galería editorial;
+- drag, drop y paste;
+- detección de múltiples prendas;
+- bounding boxes y crops;
+- reconstrucción aislada de prendas;
+- chroma adaptativo, despill y limpieza de fondo;
+- revisión humana por etapas;
+- imagen modelada con referencia;
+- persistencia local y recuperación de jobs;
+- skills `import-clothes` y `generate-outfits`.
 
-- React + Vite.
-- Galería editorial de prendas.
-- Filtros por categoría.
-- Drawer de edición.
-- Nombre, categoría, colores y tags.
-- Drag, drop y paste.
-- Detección de múltiples prendas mediante OpenAI Responses API.
-- Bounding boxes y crops automáticos.
-- Generación de prendas aisladas.
-- Chroma key adaptativo.
-- Eliminación de fondo, despill y QA de bordes.
-- Revisión humana por etapas.
-- Imagen editorial con modelo de referencia.
-- Persistencia local en JSON.
-- Recuperación de jobs locales.
-- Skill `import-clothes`.
-- Skill `generate-outfits`.
-
-Flujo actual:
+**Cómo funciona:**
 
 ```text
 foto
 → detección
 → crop
 → aprobación
-→ reconstrucción de prenda
-→ limpieza de fondo
+→ reconstrucción
+→ fondo/transparencia
 → aprobación
 → imagen modelada
 → aprobación
-→ biblioteca local
+→ biblioteca
 ```
 
-**Qué conservar:**
-
-- Pipeline y estados.
-- Skills.
-- Motor de chroma.
-- UX de revisión.
-- Galería y drawer.
-- Prompts con preservación de fidelidad.
-
-**Qué modificar:**
-
-- Migrar progresivamente a TypeScript.
-- Separar frontend, API y workers.
-- Desacoplar extracción de prenda y generación de modelo.
-- Sustituir JSON/localStorage como fuente de verdad.
-- Añadir upload a storage y jobs persistentes.
-- Ampliar categorías y esquema.
-- Añadir tests.
-- Conectar outfits y storefront.
-
-**Cómo se integra:**
-
-Wardrobe no será la aplicación final aislada. Su lógica se convertirá en módulos `wardrobe-core`, `image-pipeline` y la aplicación interna `studio`.
-
----
+**Cómo se integra:** su lógica se adapta a `wardrobe-core`, `image-pipeline`, Fashion Studio y jobs persistentes. Debe desacoplar extracción de prenda y render modelado, eliminar JSON/localStorage como fuente definitiva y conectar el esquema común.
 
 #### `Juanmaes83/MIRRORA-Style-Studio`
 
-**Rol:** Consumer Experience Core y primer Brand Console.
+**Hace:** PWA de consumidor, home editorial, catálogo, avatar paramétrico sin foto, combinaciones, looks, wishlist, QR, carrito, eventos locales, PWA y consola white-label con preview y JSON.
 
-Aporta una PWA funcional con:
-
-- Home editorial.
-- Catálogo piloto.
-- Avatar editorial paramétrico sin foto.
-- Estudio de combinaciones.
-- Órbita de complementos.
-- Looks guardados.
-- Wishlist.
-- QR y handoff.
-- CTA hacia carrito.
-- Funnel local de eventos.
-- PWA y service worker.
-- Consola de marca white-label.
-- Tema, colores, recompensa, carrito y catálogo activo.
-- Preview en vivo.
-- Exportación e importación JSON.
-- QR de campaña.
-
-Flujo actual:
+**Cómo funciona:**
 
 ```text
 descubrir look
@@ -289,325 +273,158 @@ descubrir look
 → carrito
 ```
 
-Arquitectura conceptual ya definida:
+**Cómo se integra:** se evoluciona hacia `storefront`, `brand-console`, `qr-handoff`, `analytics` y componentes reutilizables. Consume prendas, outfits y assets aprobados; no es fuente de verdad de producto ni identidad.
 
-- PWA de consumidor.
-- `mirrora-tryon-gateway` separado.
-- Handoff con Escaparates Pro / Gesture Lab.
-- Ningún dato facial en QR.
-- No prometer talla o fit físico.
-
-**Qué conservar:**
-
-- UX de consumidor.
-- Looks y wishlist.
-- Avatar de nivel 1.
-- QR/handoff.
-- Funnel.
-- Consola white-label.
-- Separación de try-on mediante gateway.
-
-**Qué modificar:**
-
-- Reemplazar catálogo SVG piloto por prendas reales de Wardrobe.
-- Sustituir localStorage como fuente de verdad.
-- Conectar productos, outfits y assets compartidos.
-- Evolucionar la consola hacia un website builder por secciones.
-- Añadir preview responsive real.
-- Añadir publicación de múltiples sitios.
-
-**Cómo se integra:**
-
-MIRRORA se dividirá en:
-
-- `apps/storefront`.
-- `apps/brand-console`.
-- `packages/qr-handoff`.
-- `packages/analytics`.
-- Componentes reutilizables de avatar, catálogo, wishlist y looks.
-
----
-
-### 5.2 Repositorios auxiliares utilizables
+### 6.2 Repositorios auxiliares utilizables
 
 #### `Juanmaes83/ai-closet`
 
-**Upstream original:** `zebangeth/ai-closet`  
+**Upstream:** `zebangeth/ai-closet`.  
 **Licencia:** MIT.
 
-**Rol:** AI Closet Engine y referencia de UX para armario, canvas de looks y try-on.
+**Hace:** app Expo/React Native de armario, categorización visual, eliminación de fondo, canvas de outfits con mover/escalar/rotar/capas y try-on externo.
 
-Aporta:
-
-- App Expo / React Native de armario digital.
-- Categorizacion visual de prendas.
-- Eliminacion de fondo mediante proveedor externo.
-- Canvas de outfits con gestos de mover, escalar, rotar y ordenar capas.
-- Virtual try-on mediante proveedor externo.
-- Estados locales de procesamiento.
-
-**Decision de integracion:**
-
-No se integra como app completa dentro de Fashion Studio SOL. Se adapta como
-`packages/ai-closet-engine`, un modulo portable con contratos, mapeo a
-`fashion-schema`, jobs y cliente de gateway.
-
-**Regla de seguridad:**
-
-Los servicios AI no pueden ejecutarse desde frontend ni usar claves `EXPO_PUBLIC_*`.
-Categorizacion, fondo transparente y try-on deben pasar por backend/proxy
-(`mirrora-tryon-gateway` o API equivalente) con secretos server-side, consentimiento,
-TTL, purge y auditoria.
-
-**Como se integra:**
-
-```text
-ai-closet reference
-→ packages/ai-closet-engine
-→ fashion-schema/Garment + Outfit
-→ SOL Studio / Operations
-→ MIRRORA closet, canvas y try-on gateway
-```
+**Cómo se integra:** no como aplicación completa. Se adapta como `ai-closet-engine` portable, mapeado a `fashion-schema`, jobs backend y cliente del Try-On Gateway. Ninguna clave AI puede vivir como `EXPO_PUBLIC_*`; consentimiento, TTL, purge y auditoría son obligatorios.
 
 #### `Juanmaes83/aiclothswap-showcase`
 
-**Rol:** Prompt QA, benchmark y reparación de resultados.
+**Hace:** cookbook de prompts, ejemplos, rúbrica de calidad, fallos frecuentes y reparaciones dirigidas.
 
-Aporta:
+**Cómo se integra:** `prompt-qa`, `audit-generated-fashion`, motivos de rechazo, retries dirigidos y benchmark visual.
 
-- Prompts de clothes swap.
-- Casos sintéticos.
-- Fallos frecuentes.
-- Prompts de reparación dirigidos.
-- Rúbrica de evaluación.
-
-Dimensiones de QA reutilizables:
-
-- Preservación de identidad.
-- Fidelidad de prenda.
-- Fit y drape.
-- Estabilidad del fondo.
-- Manos y bordes.
-- Iluminación y sombras.
-- Utilidad final.
-
-**Integración prevista:**
-
-```text
-packages/prompt-qa
-skills/audit-generated-fashion
-tests/visual-benchmark
-```
-
-No es el motor privado de AIClothSwap y no debe tratarse como tal.
-
----
+**Límite:** no es el motor privado de AIClothSwap ni debe tratarse como tal.
 
 #### `Juanmaes83/fashionAI`
 
 **Licencia del código:** MIT.
 
-**Rol:** referencia de UX y patrones de integración.
+**Hace:** antiguo prototipo Next.js de upload, máscara/inpainting, comparación antes/después, slider, rate limiting y proveedor externo.
 
-Aporta:
-
-- Next.js.
-- Upload.
-- Comparación antes/después.
-- Slider visual.
-- Rate limiting con Upstash.
-- Integración con proveedor externo.
-- Framer Motion y Tailwind.
-
-**Integración prevista:** extraer patrones o componentes concretos, no usar la aplicación completa como base.
-
-Motivo: arquitectura antigua, prototipo descrito por su autor como modificación rápida de RoomGPT y dependencia de una pipeline histórica.
-
----
+**Cómo se integra:** solo patrones o componentes concretos después de revisión; no como arquitectura base.
 
 #### `Juanmaes83/gestalt-A-set-of-React-UI-components-that-supports-Pinterest-s-design-language`
 
 **Upstream:** Pinterest Gestalt.  
 **Licencia:** Apache 2.0.
 
-**Rol:** referencia y posible librería selectiva de componentes accesibles.
+**Hace:** componentes React maduros, accesibilidad, grids, modales, tabs, combobox, controles y estados de foco.
 
-Posibles usos:
-
-- Grid/masonry.
-- Modal y sheet.
-- Tabs.
-- Combobox.
-- Segmented controls.
-- Toast.
-- Estados de foco y accesibilidad.
-
-**Regla:** Fashion Studio SOL debe conservar lenguaje visual propio. No se clonará el monorepo completo ni se imitará Pinterest visualmente.
-
----
+**Cómo se integra:** selección mínima de patrones/componentes compatibles con el design system propio. No copiar la identidad visual de Pinterest ni el monorepo completo.
 
 #### `Juanmaes83/llmd-flow-visualizer`
 
 **Licencia:** Apache 2.0.
 
-**Rol:** referencia visual para Operations Console.
+**Hace:** flujos animados, componentes inspeccionables y pasos visuales.
 
-Aporta:
-
-- Flujos animados.
-- Componentes inspeccionables.
-- Estados paso a paso.
-- Visualización de arquitecturas complejas.
-
-**Integración prevista:** adaptar el patrón de flujo, no su contenido de Kubernetes/LLM-D.
-
----
+**Cómo se integra:** patrón de interacción para Operations Console, sustituyendo su contenido LLM/Kubernetes por jobs de moda.
 
 #### `Juanmaes83/clarity-upscaler`
 
-**Rol:** investigación para mejora y upscale de assets.
+**Hace:** upscale y mejora por tiles para imágenes de alta resolución.
 
-Posibles usos:
+**Cómo se integra:** nunca directamente en el core sin revisión legal. Solo como referencia o proveedor aislado `image-enhancement` intercambiable.
 
-- Cutouts.
-- Imágenes editoriales.
-- Outfits.
-- Campañas.
-- Exportaciones de alta resolución.
+**Riesgo:** upstream AGPL y obligaciones asociadas; además, no todos los modelos mencionados son open source.
 
-**Riesgo:** licencia y obligaciones del upstream deben auditarse antes de integrar. No debe entrar directamente en el core.
+#### Gist de extracción de Wardrobe
 
-**Integración prevista:** proveedor aislado e intercambiable:
+**Recurso:** `tandpfun/b73063c8be8fc46644da9925d48b3240`.
 
-```text
-services/image-enhancement-provider
-```
+**Hace:** inventario de fuentes, contact sheets, crops focalizados, reconstrucción basada en evidencia, chroma, QA y deduplicación conservadora.
 
----
+**Cómo se integra:** principios en skills internas de ingestión y QA, después de sanitizar caracteres Unicode bidireccionales/ocultos y verificar licencia. No instalar ciegamente.
 
-### 5.3 Repositorios de investigación — no integrar directamente en producción
+#### Repo Explainer de Wardrobe
+
+**Hace:** explicación humana del repositorio.
+
+**Cómo se integra:** solo orientación. El código y README originales son la autoridad.
+
+### 6.3 Investigación — no integrar directamente en producción
 
 #### `Juanmaes83/Magic-TryOn`
 
-**Rol:** benchmark de virtual try-on de imagen y vídeo.
+**Hace:** investigación de try-on de imagen/vídeo basada en Wan 2.1, Diffusion Transformer, máscaras, DensePose, human parsing y preservación temporal.
 
-Aporta conocimiento sobre:
+**Licencia:** CC BY-NC-SA 4.0.
 
-- Wan 2.1.
-- Diffusion Transformer.
-- Consistencia temporal.
-- Preservación coarse-to-fine de prendas.
-- DensePose, human parsing y máscaras.
-- Try-on de vídeo.
-
-**Licencia:** CC BY-NC-SA 4.0.  
-**Decisión:** solo I+D y benchmark. No utilizar código ni pesos en el producto comercial sin licencia adicional.
-
----
+**Decisión:** I+D y benchmark. Sin código ni pesos en el producto comercial salvo licencia adicional.
 
 #### `Juanmaes83/IMAGDressing`
 
-**Rol:** benchmark para generación controlada mediante prenda, pose, rostro y escena.
+**Hace:** generación controlada por prenda, pose, rostro y escena; IP-Adapter, ControlNet, inpainting, FaceID y métrica CAMI.
 
-Aporta conocimiento sobre:
-
-- IP-Adapter.
-- ControlNet.
-- Inpainting.
-- Pose.
-- FaceID.
-- Métrica CAMI.
-
-**Licencias:** el código puede ser permisivo, pero modelos y checkpoints publicados están restringidos a investigación no comercial.
-
-**Decisión:** utilizar como referencia de arquitectura, métricas y benchmark; no sus checkpoints en producción.
-
----
+**Decisión:** referencia de arquitectura, controles y métricas. Aunque el código sea permisivo, los modelos/checkpoints/datasets publicados tienen restricciones no comerciales.
 
 #### `Juanmaes83/AI_Fashion_Cloth_Changer`
 
-**Rol:** laboratorio histórico de DreamBooth, Stable Diffusion, ControlNet e inpainting.
+**Hace:** laboratorio histórico de DreamBooth, Stable Diffusion, ControlNet, inpainting, datasets y tagging.
 
-Aporta conocimiento sobre:
-
-- Entrenamiento específico.
-- Datasets y tagging.
-- Máscaras.
-- Transferencia de prendas.
-
-**Riesgos:** stack antiguo, entrenamiento caro, reproducibilidad limitada y licencia pendiente de auditoría.
-
-**Decisión:** conservar como referencia histórica, no integrar.
-
----
+**Decisión:** conservar como referencia histórica. Stack antiguo, coste alto, reproducibilidad limitada y licencia pendiente de auditoría.
 
 #### `Juanmaes83/deepchange`
 
-**Rol real:** dataset y benchmark de reidentificación de personas con cambios de ropa.
+**Hace realmente:** dataset/benchmark de reidentificación de personas con cambios de ropa.
 
-No es un motor de outfits, recomendación, extracción o virtual try-on.
+**No hace:** outfits, recomendación, extracción ni try-on.
 
-**Licencia/datos:** uso no comercial de investigación, con restricciones fuertes sobre imágenes y derivados.
+**Decisión:** no integrar. Uso no comercial de investigación y restricciones fuertes; solo puede inspirar futuros estudios de consistencia de identidad.
 
-**Decisión:** no integrar en Fashion Studio SOL. Solo podría inspirar investigación futura sobre consistencia de identidad.
+### 6.4 Repositorios relacionados pendientes de auditoría
 
----
+- `Juanmaes83/wardrowbe`
+- `Juanmaes83/smart-wardrobe`
+- `Juanmaes83/wardrobe-BE`
+- `Juanmaes83/smart-wardrobe-style-and-try-on`
+- `Juanmaes83/dressme`
+- builders y proyectos web del propietario todavía no inventariados para Fase 5.
 
-### 5.4 Repositorios futuros por inventariar
-
-El usuario dispone de varios website builders y proyectos web en GitHub que podrán aportar:
-
-- Editor de secciones.
-- Drag and drop.
-- Plantillas.
-- Design tokens.
-- Preview responsive.
-- Publicación.
-
-**Antes de seleccionar uno:**
-
-1. Auditar arquitectura.
-2. Auditar licencia.
-3. Confirmar que el editor es modular.
-4. Evaluar deuda técnica.
-5. Evitar fusionar varios builders completos.
-6. Extraer únicamente el mejor núcleo o patrones reutilizables.
-
-El objetivo no es coleccionar builders, sino elegir una base de edición compatible con el esquema de Fashion Studio SOL.
+No se les asignará responsabilidad de producción hasta revisar código, historial, licencia, solapamiento y deuda técnica.
 
 ---
 
-## 6. Arquitectura objetivo
+## 7. Arquitectura objetivo
 
 ```text
 Fashion-Studio-SOL/
 ├── apps/
-│   ├── studio/                  # Operador: prendas, outfits, contenido y webs
-│   ├── storefront/              # Web pública generada
-│   ├── brand-console/           # Configuración white-label y website builder
-│   ├── api/                     # API de negocio
-│   ├── vision-worker/           # Procesamiento IA/imagen
-│   └── operations-console/      # Jobs, costes, errores y QA
+│   ├── studio/                         # Operador: prendas, outfits, modelos, contenido y webs
+│   ├── storefront/                     # Experiencia pública
+│   ├── brand-console/                  # White-label y Website Builder
+│   ├── api/                            # API de negocio
+│   ├── vision-worker/                  # Procesamiento IA/imagen
+│   ├── operations-console/             # Jobs, costes, errores y QA
+│   └── growth-console/                 # Pista B2B posterior
+│
+├── modules/
+│   └── pose-library-model-consistency/
+│       ├── README.md
+│       ├── PROMPTS.md
+│       ├── data/
+│       └── schema/
 │
 ├── packages/
-│   ├── ui/                      # Design system propio
-│   ├── fashion-schema/          # Contrato común de datos
-│   ├── wardrobe-core/           # Prendas, galería y edición
-│   ├── image-pipeline/          # Detección, crops, generación y limpieza
-│   ├── outfit-core/             # Outfits y relaciones entre prendas
-│   ├── outfit-engine/           # Reglas, scoring y recomendaciones
-│   ├── website-builder/         # Secciones, temas y publicación
-│   ├── storefront-sections/     # Bloques renderizables
-│   ├── prompt-qa/               # Prompts, reparación y benchmarks
-│   ├── analytics/               # Funnel y eventos
-│   ├── qr-handoff/              # Contratos QR/campaña
-│   ├── weather-engine/          # Fase posterior
-│   └── fabric-motion/           # Fase posterior
+│   ├── ui/
+│   ├── fashion-schema/
+│   ├── wardrobe-core/
+│   ├── image-pipeline/
+│   ├── ai-closet-engine/
+│   ├── outfit-core/
+│   ├── outfit-engine/
+│   ├── website-builder/
+│   ├── storefront-sections/
+│   ├── prompt-qa/
+│   ├── analytics/
+│   ├── qr-handoff/
+│   ├── weather-engine/                 # posterior
+│   └── fabric-motion/                  # posterior
 │
 ├── services/
-│   ├── tryon-gateway/           # Proveedores intercambiables
-│   ├── image-enhancement/       # Upscale/mejora opcional
-│   └── publishing/              # Preview y deploy
+│   ├── tryon-gateway/
+│   ├── image-enhancement/
+│   ├── publishing/
+│   └── generation-adapters/
 │
 ├── skills/
 │   ├── import-clothes/
@@ -634,15 +451,13 @@ Fashion-Studio-SOL/
     └── visual-benchmark/
 ```
 
-La estructura podrá ajustarse después de la fase de consolidación. No se debe crear toda vacía solo para aparentar avance.
+Es una arquitectura objetivo. No se deben crear carpetas vacías ni copiar aplicaciones enteras para aparentar avance.
 
 ---
 
-## 7. Contrato de datos común
+## 8. Contratos y fuentes de verdad
 
-El primer gran trabajo de integración es crear `fashion-schema`.
-
-### Entidades iniciales
+### 8.1 Entidades compartidas
 
 ```text
 Project
@@ -653,6 +468,12 @@ GarmentAsset
 GarmentSource
 Outfit
 OutfitItem
+ModelIdentity
+ModelReference
+PoseLibrary
+PoseDefinition
+ModelRender
+ConsistencyReview
 ModeledRender
 GeneratedAsset
 GenerationJob
@@ -665,9 +486,7 @@ WishlistItem
 AnalyticsEvent
 ```
 
-### Ontología V1 aprobada
-
-Debe ser suficiente para catálogo, outfits, web y clima básico sin bloquear el MVP:
+### 8.2 Ontología V1 de prendas
 
 ```text
 category
@@ -686,7 +505,7 @@ thermalWeight
 tags
 ```
 
-Campos de ecommerce opcionales desde el diseño, aunque no todos sean obligatorios inicialmente:
+Opcionales de ecommerce:
 
 ```text
 sku
@@ -698,83 +517,117 @@ stock
 productUrl
 ```
 
-### Evolución posterior
+La V2 podrá incorporar cuello, manga, longitud, cierre, construcción, peso del tejido, transpirabilidad, impermeabilidad, elasticidad, formalidad, capas, cuidado y atributos por categoría.
 
-La ontología V2 podrá añadir:
+### 8.3 Separación obligatoria
 
-- Cuello.
-- Manga.
-- Longitud.
-- Cierre.
-- Construcción.
-- Peso del tejido.
-- Transpirabilidad.
-- Impermeabilidad.
-- Elasticidad.
-- Formalidad.
-- Capas.
-- Compatibilidad climática avanzada.
-- Reglas de cuidado.
-- Atributos específicos por categoría.
+```text
+Garment / Outfit / ModelIdentity / PoseDefinition
+            = verdad aprobada
 
-**Decisión:** esquema extensible y progresivo. No implementar toda la taxonomía mundial de moda antes del piloto.
-
----
-
-## 8. Outfit Layer
-
-### Situación actual
-
-- Wardrobe incluye una skill capaz de crear outfits.
-- MIRRORA ya representa y guarda looks.
-- El usuario dispone o puede disponer de imágenes de outfits locales.
-- Falta una entidad común y la interfaz editorial completa observada en el vídeo.
-
-### Estrategia inicial
-
-Se admitirán tres fuentes:
-
-1. Imágenes locales subidas manualmente.
-2. Outfits generados mediante la skill.
-3. Outfits creados manualmente seleccionando prendas del catálogo.
-
-### Entidad mínima
-
-```json
-{
-  "id": "outfit-id",
-  "name": "Navy & Camel Classic",
-  "garmentIds": ["garment-1", "garment-2"],
-  "occasion": ["smart-casual"],
-  "season": ["autumn"],
-  "description": "...",
-  "tags": ["tonal", "layered"],
-  "modeledImage": "...",
-  "flatLayImage": "...",
-  "status": "draft | review | approved"
-}
+GeneratedAsset / ModelRender
+            = resultado derivado, versionado y revisable
 ```
 
-### UI objetivo
-
-- Grid editorial.
-- Filtros.
-- Hover o tap modelo → prendas utilizadas.
-- Drawer del look.
-- Flat lay.
-- Descripción.
-- Etiquetas.
-- Regeneración.
-- Compra el look.
-- Asociación verificable con prendas reales.
+Un render nunca sobrescribe la prenda, el outfit, la identidad o el prompt canónico.
 
 ---
 
-## 9. Website Builder MVP
+## 9. Pose Library & Model Consistency Engine
 
-El primer builder será estructurado, no completamente libre.
+### 9.1 Estado canónico actual
 
-### Secciones iniciales
+- **1 referencia femenina:** `FREF-01`.
+- **10 poses e-commerce:** `S01–S10`.
+- **10 poses editoriales:** `ED1–ED10`.
+- **21 prompts totales** contando la referencia.
+- Transcripción literal desde las capturas del propietario del 29 de julio de 2026.
+- Se conservan wording, capitalization, hyphenation y punctuation; solo se normalizan saltos visuales y estilos tipográficos.
+
+Archivos canónicos:
+
+- [`modules/pose-library-model-consistency/README.md`](modules/pose-library-model-consistency/README.md) — arquitectura y fases.
+- [`modules/pose-library-model-consistency/PROMPTS.md`](modules/pose-library-model-consistency/PROMPTS.md) — transcripción completa exacta.
+- [`modules/pose-library-model-consistency/data/female-pose-library.v1.json`](modules/pose-library-model-consistency/data/female-pose-library.v1.json) — fuente estructurada.
+- [`modules/pose-library-model-consistency/schema/pose-library.schema.json`](modules/pose-library-model-consistency/schema/pose-library.schema.json) — contrato de validación.
+
+### 9.2 Flujo
+
+```text
+referencia canónica del modelo
+→ identidad + consentimiento + procedencia
+→ pose versionada
+→ prenda u outfit aprobado
+→ compilador de prompt
+→ adaptador de generación
+→ job con proveedor/modelo/versión/seed/coste
+→ QA automático
+→ revisión humana
+→ approved | rejected | regenerate
+→ catálogo, lookbook, campaña, MIRRORA o storefront
+```
+
+### 9.3 Componentes
+
+1. Model Identity Registry.
+2. Pose Registry.
+3. Prompt Compiler.
+4. Generation Adapter Layer.
+5. Consistency & QA Engine.
+6. Human Review Console.
+7. Asset & Provenance Registry.
+
+### 9.4 Contratos de consistencia
+
+- **Identidad:** rostro, edad aparente, piel, pelo y proporciones no derivan entre poses.
+- **Prenda:** no inventar o eliminar material, color, patrón, longitud, escote, cierres, logos o construcción.
+- **Pose:** respetar framing, cámara, cuerpo, manos, mirada, expresión, fondo e iluminación.
+- **Producción:** cada output debe ser trazable, revisable y reproducible cuando el proveedor lo permita.
+- **Legal/comercial:** bloquear proveedores o pesos incompatibles y no prometer fit o talla.
+
+### 9.5 Integración
+
+```text
+Wardrobe / Outfit Engine
+→ prenda u outfit aprobado
+→ Pose Library & Model Consistency Engine
+→ assets modelados con QA y procedencia
+→ MIRRORA / Website Builder / Storefront / Campaigns
+```
+
+Try-On Gateway y proveedores externos pueden producir imágenes, pero no saltarse esta revisión.
+
+### 9.6 Fases internas del módulo
+
+- **0 — Documentación canónica:** completada en esta rama.
+- **1 — Registry y UI local:** browser de poses, referencias, preview y review.
+- **2 — Jobs provider-neutral:** adaptador, estados, retries, seed, coste y latencia.
+- **3 — QA automático:** identidad, pose, prenda, color, anatomía, manos, framing y fondo.
+- **4 — Wardrobe/Outfit:** batch y packs PDP/lookbook/campaña.
+- **5 — MIRRORA/Website Builder:** publicación solo de assets aprobados.
+- **6 — Escala:** persistencia compartida, workers, usuarios y SaaS tras validación.
+
+La prioridad global sigue siendo cerrar Fase 2G; el módulo puede documentarse y diseñarse en paralelo, pero no debe crear una segunda persistencia incompatible.
+
+---
+
+## 10. Outfit Layer
+
+Fuentes admitidas:
+
+1. imágenes locales;
+2. manifiestos de la skill de generación;
+3. selección manual de prendas reales.
+
+Debe soportar grid editorial, filtros, drawer, flat lay, tags, regeneración, revisión, Shop the Look y asociación verificable con `garmentIds`.
+
+Solo outfits `approved` pueden publicarse.
+
+---
+
+## 11. Website Builder MVP
+
+Primer builder estructurado por secciones:
 
 ```text
 Hero
@@ -791,95 +644,48 @@ CTA
 Footer
 ```
 
-### Cada sección debe ser schema-driven
+Capacidades:
 
-Ejemplo conceptual:
+- elegir plantilla;
+- editar branding;
+- añadir, ocultar y ordenar secciones;
+- seleccionar productos, outfits y assets aprobados;
+- editar textos y medios;
+- preview responsive;
+- publicar en una URL.
 
-```json
-{
-  "type": "shop-the-look",
-  "visible": true,
-  "order": 4,
-  "settings": {
-    "title": "Complete the look",
-    "outfitIds": ["look-1", "look-2"],
-    "layout": "editorial-grid"
-  }
-}
-```
-
-### Capacidades del MVP
-
-- Elegir plantilla.
-- Editar branding.
-- Añadir, ocultar y reordenar secciones.
-- Seleccionar productos y outfits.
-- Editar textos y medios.
-- Preview desktop, tablet y móvil.
-- Publicar en una URL.
-
-### Fuera del MVP
-
-- Editor libre pixel-perfect.
-- Código arbitrario por usuario.
-- Marketplace completo de temas.
-- CMS genérico para cualquier industria.
+Fuera del MVP: editor libre pixel-perfect, código arbitrario, marketplace completo de temas y CMS genérico para cualquier industria.
 
 ---
 
-## 10. Persistencia y procesamiento antes del SaaS
+## 12. Persistencia y procesamiento antes del SaaS
 
-Aunque el SaaS completo se pospone, no podemos validar con datos inconsistentes.
+La validación exige una fuente de verdad consistente aunque todavía no haya multitenancy completo:
 
-### Problemas actuales a resolver
+- PostgreSQL o equivalente;
+- storage de assets;
+- URLs firmadas o multipart;
+- jobs persistentes;
+- worker separado;
+- retries y recuperación;
+- IDs compartidos;
+- checksums, logs y costes;
+- estados de revisión;
+- rollback y migración idempotente.
 
-- Wardrobe mezcla JSON local y localStorage.
-- MIRRORA usa localStorage por dispositivo.
-- Las imágenes se envían como Data URL dentro de JSON.
-- Los jobs se ejecutan dentro del proceso local.
-- No hay cola persistente.
-- No hay fuente central de verdad.
+**PR #3** implementa gran parte de Fase 2A–2F. Antes de fusionarlo hay que completar y verificar 2G, ejecutar el flujo real, confirmar seguridad y mantener Wardrobe/MIRRORA alineados.
 
-### Solución para el MVP validable
+Infraestructura prevista después de validación local:
 
-No es necesario construir multitenancy completo, pero sí:
-
-- Base de datos persistente sencilla.
-- Storage de assets.
-- Upload directo mediante URL firmada o multipart.
-- Tabla de jobs.
-- Worker separado.
-- Estados recuperables.
-- IDs comunes.
-- Logs básicos.
-- Control de coste y reintentos.
-
-Infraestructura prevista:
-
-- Vercel para frontend y previews.
-- Railway para API y workers.
-- PostgreSQL/Supabase para persistencia.
-- Storage compatible con URLs firmadas.
-- Redis/cola solo cuando el volumen lo justifique, pero con interfaz preparada.
-
-### SaaS posterior
-
-Después de validación:
-
-- Organizaciones.
-- Usuarios y roles.
-- Multitenancy.
-- Límites.
-- Facturación.
-- Planes.
-- Cuotas de IA.
-- Auditoría avanzada.
+- Vercel para frontend/previews;
+- Railway para API/workers;
+- PostgreSQL/Supabase;
+- storage con URLs firmadas;
+- Redis/cola solo cuando el volumen lo justifique, con interfaz preparada.
 
 ---
 
-## 11. Virtual Try-On Gateway
-
-El try-on será un servicio separado con proveedor intercambiable.
+## 13. Virtual Try-On Gateway
 
 ```text
 submit(job) → job_id
@@ -888,352 +694,207 @@ result(job_id) → asset temporal firmado
 purge(job_id) → borrado verificable
 ```
 
-### Requisitos no negociables
+No negociable:
 
-- Consentimiento explícito.
-- TTL.
-- Borrado.
-- Auditoría.
-- Métricas de cola.
-- Separación de fotos personales.
-- No prometer talla ni fit físico.
-- Ningún QR transporta datos faciales.
-
-### Proveedores
-
-La primera versión podrá usar una API comercial o generación de imagen general con QA. Los modelos de investigación servirán para benchmark, no para producción si sus licencias lo impiden.
+- consentimiento explícito;
+- TTL y purge;
+- auditoría;
+- separación de fotos personales;
+- proveedores intercambiables;
+- métricas de cola, coste y errores;
+- QA de Pose Library & Model Consistency;
+- ningún QR con datos faciales;
+- ninguna promesa de talla o fit.
 
 ---
 
-## 12. Weather Intelligence — fase posterior
+## 14. Fases posteriores
 
-Objetivo:
+### Weather Intelligence
 
 ```text
 ubicación + clima + contexto + armario
 → ranking y recomendación de prendas/outfits
 ```
 
-No se basará únicamente en temperatura.
+Debe considerar temperatura aparente, viento, humedad, precipitación, UV, hora, actividad, ocasión y preferencias. El proveedor meteorológico debe ser intercambiable y válido para uso comercial.
 
-Variables relevantes:
-
-- Temperatura aparente.
-- Viento y rachas.
-- Humedad.
-- Precipitación.
-- UV.
-- Hora.
-- Actividad.
-- Ocasión.
-- Preferencias.
-
-La fuente meteorológica deberá ser intercambiable y revisada para uso comercial. Open-Meteo es un candidato, pero no debe asumirse que su servicio alojado gratuito cubre un SaaS comercial.
-
-El motor actuará como reranker de:
-
-- Home.
-- Catálogo.
-- Outfits.
-- Planner.
-- Recomendaciones.
-
----
-
-## 13. Dynamic Fabric Engine — fase posterior
-
-El repositorio de banderolas/telas dinámicas es una prueba de concepto, no un motor de ropa terminado.
-
-Evolución prevista:
+### Dynamic Fabric Engine
 
 ```text
 WebGL demo
-→ módulo TypeScript
-→ componente React
+→ TypeScript
+→ React
 → texturas alpha
-→ presets de material
+→ materiales
+→ siluetas y anclajes
 → rendimiento adaptativo
-→ silueta de prenda
-→ anclajes por categoría
-→ exportación de vídeo
-→ conexión meteorológica
+→ exportación visual
+→ clima opcional
 ```
 
-Variables potenciales:
-
-- Velocidad y dirección del viento.
-- Rachas.
-- Humedad.
-- Lluvia.
-- Tipo y peso de tejido.
-
-Este módulo no sustituye un virtual try-on físico ni garantiza caída real sobre el cuerpo.
+No sustituye un try-on físico ni garantiza caída real.
 
 ---
 
-## 14. Roadmap
+## 15. Roadmap global
 
-### Fase 0 — Consolidación documental y auditoría
+### Fase 0 — Consolidación y auditoría — ✅
 
-**Objetivo:** saber exactamente qué existe y qué puede usarse.
+Inventario, upstreams, licencias, terceros, ADR y criterios del MVP.
 
-- Mantener este README actualizado.
-- Inventariar repositorios adicionales.
-- Registrar upstream.
-- Auditar licencias.
-- Crear `THIRD_PARTY.md`.
-- Crear ADR de integración Wardrobe + MIRRORA.
-- Definir criterios de aceptación del MVP.
+### Fase 1 — Foundation e integración — ✅
 
-**Salida:** mapa de activos aprobado y sin ambigüedades.
+Wardrobe, MIRRORA, `fashion-schema`, IDs y catálogo compartido.
 
----
+### Fase 2 — Persistencia y pipeline profesional — 🟠
 
-### Fase 1 — Foundation e integración de núcleos
+2A–2F en PR #3; cerrar 2G, seguridad, demo real y decisión de merge.
 
-- Inicializar estructura mínima del repositorio.
-- Importar Wardrobe preservando atribución MIT.
-- Importar MIRRORA como aplicación separada.
-- Crear `fashion-schema`.
-- Normalizar IDs.
-- Compartir catálogo y assets.
-- Mantener ambas experiencias ejecutables.
+**Salida:** jobs y ediciones sobreviven reinicios y navegadores autorizados.
 
-**Criterio de salida:** una prenda aprobada en Wardrobe puede aparecer en el catálogo MIRRORA sin duplicar datos manualmente.
+### Fase 3 — Ontología V1 — ✅
 
----
+Categorías, metadatos, validación y migración canónica.
 
-### Fase 2 — Persistencia y pipeline profesional
+### Fase 4 — Outfit Layer — ✅ base consolidada
 
-- Reemplazar JSON/localStorage como fuente de verdad.
-- Base de datos inicial.
-- Storage de assets.
-- Upload escalable.
-- Jobs persistentes.
-- Worker separado.
-- Reintentos.
-- Logs y coste.
-- Separar extracción y modeled rendering.
+Crear, revisar, asociar y publicar outfits con prendas reales.
 
-**Criterio de salida:** un job sobrevive a reinicios y sus ediciones se ven en cualquier navegador autorizado del entorno de prueba.
+### Fase 4B — Pose Library & Model Consistency Engine — 🟠
 
----
+Documentación exacta y contrato ahora; runtime por microfases 1–5 después de alinearlo con Fase 2.
 
-### Fase 3 — Ontología V1 y catálogo completo
+**Salida funcional:** una identidad y un outfit aprobados producen un pack de poses revisado, trazable y publicable.
 
-- Implementar categorías y subcategorías necesarias.
-- Añadir material, patrón, silueta, season, style, occasion y thermalWeight.
-- Migrar metadatos existentes.
-- Validación con Zod/JSON Schema.
-- Editor de ficha mejorado.
+### Fase 5 — Website Builder MVP — ⏳
 
-**Criterio de salida:** las prendas tienen datos suficientes para búsqueda, outfits y storefront sin campos libres incoherentes.
+Auditar builders, elegir una base, themes, secciones, responsive preview y storefront schema-driven.
 
----
+### Fase 6 — Publicación y validación comercial — ⏳
 
-### Fase 4 — Outfit Layer
+Preview URLs, deploy piloto, analytics, funnel, tiempos, costes, errores y uso real.
 
-- Import de imágenes locales.
-- Import de manifiestos generados.
-- Outfit builder manual.
-- Asociación outfit-prendas.
-- Grid editorial.
-- Drawer y flat lay.
-- Generación y regeneración.
-- QA visual.
-- Shop the Look.
+### Pista 6B — Brand Acquisition & Spec Campaign Engine — 🧭
 
-**Criterio de salida:** se puede crear, revisar, mostrar y publicar un outfit formado por prendas reales del catálogo.
+Tras Fase 2G y Campaign Builder: dominio de prospectos, rights/consent, campañas privadas, QA, outreach responsable, engagement y CRM handoff.
+
+### Fase 7 — Try-On Gateway — ⏳
+
+Contrato, consentimiento, proveedor inicial, benchmark y storefront.
+
+### Fase 8 — SaaS — posterior a validación
+
+Auth, organizaciones, roles, multitenancy, planes, Stripe, cuotas y administración.
+
+### Fase 9 — Weather Intelligence — posterior
+
+Geolocalización, proveedor, reglas, scoring y métricas de utilidad.
+
+### Fase 10 — Dynamic Fabric Engine — posterior
+
+Refactor, materiales, siluetas, clima, exportación e integración opcional.
 
 ---
 
-### Fase 5 — Website Builder MVP
-
-- Themes y design tokens.
-- Biblioteca de secciones.
-- Reordenación.
-- Configuración.
-- Preview responsive.
-- Home, colección, PDP y lookbook.
-- Storefront generado por schema.
-
-**Criterio de salida:** una marca puede construir una web de moda funcional sin modificar código.
-
----
-
-### Fase 6 — Publicación y validación comercial
-
-- Preview URLs.
-- Deploy.
-- Dominio de piloto.
-- Analytics.
-- Funnel catálogo → look → carrito/lead.
-- Piloto real.
-- Medición de tiempos, costes, errores y uso.
-
-**Criterio de salida:** una marca real utiliza la plataforma y se puede medir si el flujo aporta valor.
-
----
-
-### Fase 7 — Try-On Gateway
-
-- Contrato de proveedor.
-- Consentimiento.
-- TTL y purge.
-- Proveedor inicial.
-- Benchmark de calidad.
-- Integración en storefront.
-
----
-
-### Fase 8 — SaaS
-
-Solo después de validar:
-
-- Auth.
-- Organizaciones.
-- Roles.
-- Multitenancy.
-- Planes.
-- Stripe.
-- Cuotas y facturación de IA.
-- Panel de administración.
-
----
-
-### Fase 9 — Weather Intelligence
-
-- Geolocalización con permiso.
-- Ciudad manual.
-- Proveedor meteorológico.
-- Reglas y scoring.
-- Recomendaciones y reranking.
-- Métricas de utilidad.
-
----
-
-### Fase 10 — Dynamic Fabric Engine
-
-- Refactor de la prueba WebGL.
-- Presets textiles.
-- Siluetas y anclajes.
-- Interacción con clima.
-- Exportación visual.
-- Integración opcional en storefront y campañas.
-
----
-
-## 15. Primer vertical slice recomendado
-
-Antes de ampliar todas las fases, Fashion Studio SOL debe demostrar este recorrido completo:
+## 16. Vertical slice prioritario
 
 ```text
 crear proyecto
-→ subir una foto con varias prendas
-→ detectar prendas
-→ revisar crops
-→ aprobar un PNG transparente
+→ subir foto con varias prendas
+→ detectar y revisar crops
+→ aprobar PNG transparente
 → editar metadatos
-→ crear o importar un outfit
-→ seleccionar una plantilla
-→ mostrar prenda y outfit en una web
+→ crear/importar outfit
+→ registrar modelo de referencia
+→ seleccionar pose canónica
+→ generar asset
+→ revisar identidad + prenda + pose + anatomía
+→ aprobar asset
+→ seleccionar plantilla y secciones
+→ mostrar prenda/outfit/asset en la web
 → publicar preview
+→ medir interacción
 ```
 
-Este flujo valida el núcleo del producto mejor que construir muchas pantallas desconectadas.
+Valida mejor el producto que construir muchas pantallas desconectadas.
 
 ---
 
-## 16. Pruebas y calidad
+## 17. Pruebas y calidad
 
 ### Tests mínimos
 
-- Unitarios del schema y reglas.
-- Integración de API y persistencia.
-- E2E de upload → aprobación → publicación.
-- Tests visuales desktop/tablet/mobile.
-- Recuperación de jobs.
-- Uploads grandes y tipos inválidos.
-- Seguridad de rutas de assets.
+- schema y reglas;
+- JSON Schema de bibliotecas de poses;
+- conteo 1 referencia + 10 e-commerce + 10 editoriales;
+- IDs únicos y prompts inmutables;
+- API y persistencia;
+- jobs y recuperación;
+- E2E upload → review → generación → aprobación → publicación;
+- uploads grandes e inválidos;
+- seguridad de assets;
+- responsive desktop/tablet/mobile;
+- procedencia, licencia y estados fail-closed.
 
-### Benchmark de imagen
+### Benchmark visual
 
-Cada resultado debe evaluarse en:
+1. identidad;
+2. prenda;
+3. pose;
+4. silueta y construcción;
+5. color y material;
+6. logos y texto;
+7. bordes y transparencia;
+8. fit/drape visual sin convertirlo en promesa física;
+9. manos y anatomía;
+10. crop y framing;
+11. fondo e iluminación;
+12. realismo;
+13. utilidad comercial.
 
-1. Fidelidad de identidad.
-2. Fidelidad de prenda.
-3. Silueta y construcción.
-4. Color y material.
-5. Logos y texto.
-6. Bordes y transparencia.
-7. Fit/drape visual.
-8. Manos y anatomía.
-9. Fondo e iluminación.
-10. Utilidad comercial.
-
-No aprobar una imagen únicamente porque sea atractiva.
-
----
-
-## 17. Riesgos principales
-
-### 17.1 Licencias contaminadas
-
-No mezclar código, pesos o datasets no comerciales en producción.
-
-### 17.2 Repositorios clonados ≠ módulos integrados
-
-Cada activo debe tener contrato, propietario, interfaz y criterio de aceptación.
-
-### 17.3 Dos fuentes de verdad
-
-Wardrobe y MIRRORA deben compartir `fashion-schema` y persistencia.
-
-### 17.4 Builder demasiado ambicioso
-
-No intentar construir Webflow, Shopify y Canva simultáneamente.
-
-### 17.5 Coste de IA
-
-Registrar coste, intentos y regeneraciones por job.
-
-### 17.6 Imágenes bonitas pero incorrectas
-
-La fidelidad del producto tiene prioridad sobre el impacto visual.
-
-### 17.7 Privacidad
-
-Las fotos personales deben permanecer separadas, temporales y auditables.
-
-### 17.8 Dependencia de un proveedor
-
-Usar interfaces intercambiables para imagen, try-on, clima, storage y upscale.
-
-### 17.9 Deuda técnica por fusionar prototipos
-
-No copiar todos los archivos directamente. Primero definir límites y contratos.
+No aprobar un output solo porque sea bonito.
 
 ---
 
-## 18. Reglas para agentes de IA y nuevas sesiones
+## 18. Riesgos principales
 
-Antes de modificar código:
+1. **Licencias contaminadas:** código, pesos o datasets no comerciales en producción.
+2. **Repositorios clonados ≠ integración:** cada activo necesita contrato, interfaz y criterio de salida.
+3. **Varias fuentes de verdad:** Wardrobe, MIRRORA, outfits, poses y renders deben compartir IDs y persistencia.
+4. **Prompt drift:** una IA reescribe la biblioteca y rompe consistencia.
+5. **Identity drift:** el modelo cambia entre poses.
+6. **Garment drift:** el render inventa, elimina o altera detalles.
+7. **Builder descontrolado:** intentar construir Webflow + Shopify + Canva.
+8. **Coste de IA:** no registrar intentos, latencia, proveedor y regeneraciones.
+9. **Privacidad:** fotos personales sin consentimiento, separación o purge.
+10. **Proveedor único:** dependencias cerradas sin adaptador.
+11. **Deuda técnica:** fusionar prototipos enteros antes de definir límites.
+12. **Confundir Draft con producción:** documentar como completado algo que vive solo en una rama/PR.
+
+---
+
+## 19. Reglas para agentes de IA y nuevas sesiones
+
+Antes de tocar código o documentación:
 
 1. Leer este README completo.
-2. Revisar el estado real del repositorio y la rama.
-3. No asumir que un repositorio listado está integrado.
-4. Revisar licencia y upstream antes de copiar código.
-5. No trabajar directamente en `main` después del commit inicial.
-6. Crear rama enfocada.
+2. Revisar rama, working tree, PRs y estado real.
+3. Leer el README del módulo afectado.
+4. No asumir que un repo listado está integrado.
+5. Revisar upstream y licencia antes de copiar.
+6. No trabajar directamente en `main`.
 7. Limitar cada PR a una microfase clara.
-8. Ejecutar tests disponibles.
-9. Documentar cambios de arquitectura.
-10. No introducir SaaS, clima o telas dentro del MVP sin aprobación explícita.
-11. Mantener Wardrobe y MIRRORA ejecutables durante la integración.
-12. No exponer API keys, fotos personales ni carpetas `data/`.
-13. No afirmar que una función existe sin probarla de principio a fin.
+8. Mantener Wardrobe y MIRRORA ejecutables.
+9. No exponer claves, fotos personales ni datos de producción.
+10. No afirmar que un flujo funciona sin probarlo extremo a extremo.
+11. No alterar prompts canónicos; crear versión nueva.
+12. No publicar assets `generated` o `needs-review`.
+13. No mezclar producto aprobado y medios generados.
+14. No introducir SaaS, clima o telas en el MVP sin aprobación.
+15. Actualizar README, roadmap, ADR y terceros cuando cambie arquitectura o alcance.
 
-### Orden de lectura recomendado
+Orden recomendado:
 
 ```text
 README.md
@@ -1242,90 +903,96 @@ README.md
 → docs/ROADMAP.md
 → docs/THIRD_PARTY.md
 → ADR relevante
-→ código de la microfase
+→ README del módulo
+→ PROMPTS/JSON/schema cuando afecte a poses
+→ código y tests de la microfase
 ```
 
 ---
 
-## 19. Convenciones de trabajo
+## 20. Convenciones de trabajo
 
-- Rama por microfase.
-- PR antes de merge.
-- Commits descriptivos.
-- Cambios pequeños y verificables.
-- No mezclar refactor masivo con funcionalidad nueva.
-- Mantener atribuciones de terceros.
-- Documentar decisiones irreversibles mediante ADR.
-- Priorizar vertical slices y validación real.
+- rama por microfase;
+- PR Draft durante construcción;
+- commits descriptivos;
+- cambios pequeños y verificables;
+- no mezclar refactor masivo y feature;
+- conservar atribuciones;
+- ADR para decisiones irreversibles;
+- vertical slices antes que expansión horizontal.
 
-Ramas sugeridas:
+Ramas orientativas:
 
 ```text
-foundation/asset-inventory
-foundation/wardrobe-mirrora-integration
-core/fashion-schema-v1
-core/persistent-jobs
+phase-2/persistence-foundation
 feature/outfit-layer
+agent/pose-library-model-consistency
 feature/website-builder-mvp
 feature/publishing-preview
+feature/brand-acquisition-spec-campaign-engine
 research/tryon-benchmark
 ```
 
 ---
 
-## 20. Próxima acción recomendada
+## 21. Próxima acción recomendada
 
-Fases 0, 1, 3 y 4 están completadas y consolidadas (contrato canónico único,
-máquina de estados protegida, CI verde en los tres repos; ver
-`docs/CONSOLIDATION-3-4.md`). Los PR permanecen en draft a la espera de aprobación.
+### Prioridad principal
 
-**Siguiente decisión real del roadmap: Fase 2 — Persistencia y pipeline profesional.**
-Es el desbloqueo pendiente antes de cualquier SaaS. Decisión a tomar:
+Cerrar **Fase 2G** sobre PR #3:
 
-1. Elegir base de datos y storage (el roadmap propone PostgreSQL/Supabase + storage
-   con URLs firmadas) manteniendo estables los IDs y el contrato `fashion-schema`.
-2. Migrar la fuente de verdad de JSON local (`wardrobe/data`) y localStorage
-   (MIRRORA) a persistencia compartida **sin cambiar la semántica** ya consolidada.
-3. Extraer la Studio API y el pipeline de import a un servicio desplegable
-   (hoy viven en el dev server de Vite).
+1. demo real sobre datos migrados;
+2. edición persistente y publicación;
+3. catálogo MIRRORA y SavedLook entre navegadores;
+4. job real autorizado, progreso y resultado;
+5. seguridad, secretos, rollback y checks finales;
+6. decisión de merge.
 
-En paralelo, investigación previa de Fase 5 (Website Builder): inventariar y comparar
-los builders existentes en los repositorios del propietario antes de elegir base.
+### Pista paralela controlada
 
----
+Completar **Pose Library & Model Consistency Engine — Fase interna 1** solo sobre los contratos de Fase 2:
 
-## 21. Definición de éxito del MVP
+- pose browser;
+- registro de identidad/referencia;
+- prompt preview;
+- upload de resultado;
+- review y rechazo;
+- sin crear otra base de datos o job system paralelo.
 
-Fashion Studio SOL alcanza su primer objetivo cuando una marca puede:
+### Investigación previa de Fase 5
 
-- Importar fotografías reales.
-- Obtener prendas revisadas y estructuradas.
-- Crear o importar outfits.
-- Elegir cómo se presentan.
-- Construir una web de moda mediante secciones.
-- Publicar una preview usable en móvil, tablet y escritorio.
-- Medir interacción con productos, looks y CTA.
-
-Sin necesidad todavía de:
-
-- SaaS completo.
-- Facturación.
-- Clima.
-- Telas dinámicas.
-- Vídeo try-on.
-- Simulación física real de fit.
+Inventariar y comparar builders existentes antes de seleccionar uno. No fusionar varios builders completos.
 
 ---
 
-## 22. Principio rector
+## 22. Definición de éxito del MVP
 
-> No estamos creando una colección de demos de IA. Estamos integrando un sistema operativo visual y comercial para moda.
+Una marca puede:
 
-Cada nueva tecnología debe mejorar al menos una de estas cuatro variables:
+- importar fotografías reales;
+- obtener prendas revisadas y estructuradas;
+- crear o importar outfits;
+- registrar un modelo autorizado;
+- generar un pack consistente de assets e-commerce/editoriales;
+- revisar y aprobar esos assets;
+- elegir cómo se presentan;
+- construir una web por secciones;
+- publicar una preview responsive;
+- medir interacción, coste y errores.
 
-- Calidad del catálogo.
-- Velocidad de creación.
-- Experiencia del consumidor.
-- Conversión o aprendizaje comercial.
+Sin necesitar todavía SaaS completo, facturación, clima, telas dinámicas, vídeo try-on o simulación física real.
+
+---
+
+## 23. Principio rector
+
+> No estamos creando una colección de demos ni una carpeta de prompts. Estamos integrando un sistema operativo visual y comercial para moda.
+
+Cada tecnología debe mejorar al menos una variable:
+
+- calidad y fidelidad del catálogo;
+- velocidad y control de creación;
+- experiencia del consumidor;
+- conversión o aprendizaje comercial.
 
 Si no mejora ninguna, no pertenece al MVP.
