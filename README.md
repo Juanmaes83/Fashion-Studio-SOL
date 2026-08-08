@@ -6,16 +6,17 @@
 
 ---
 
-## Estado del proyecto — 2026-07-17
+## Estado del proyecto — 2026-07-20
 
 | Fase | Estado |
 |---|---|
 | **Fase 0** — Consolidación documental y auditoría | ✅ Completada y fusionada en `main` (PR #2). Ver `docs/AUDIT-2026-07-13.md`, `docs/THIRD_PARTY.md`, `docs/ADR/0001` |
 | **Fase 1** — Foundation e integración de núcleos | ✅ Completada: pipeline real de Wardrobe validado de extremo a extremo (`docs/EXECUTION-WARDROBE-CORE-2026-07-17.md`), `fashion-schema` v0.1, exportador Wardrobe→MIRRORA, y MIRRORA consumiendo el catálogo real con Outfit Studio por categorías (MIRRORA PR #1 fusionado) |
-| **Fase 2** — Persistencia y pipeline profesional | ⏳ **Pendiente** (JSON local + localStorage siguen siendo la persistencia actual; no es la solución definitiva) |
+| **Fase 2 (2A–2F)** — Persistencia y pipeline profesional | 🟡 **Validada de extremo a extremo en local, pendiente de merge.** PostgreSQL + storage + cola de jobs + worker reemplazan JSON local/localStorage. Wardrobe y MIRRORA ya leen y escriben contra esta API en modo plataforma. Ver `docs/PHASE-2F-LOCAL-DEMO.md` (estado validado) y `docs/ADR/0002-phase-2-persistence.md`. Abierto en `Fashion-Studio-SOL` PR #3 (`phase-2/persistence-foundation`, draft, CI verde), `wardrobe` PR #2 y `MIRRORA-Style-Studio` PR #3 (`phase-2f/platform-integration`, draft, CI verde) |
+| **Fase 2G** — Despliegue externo | ⏳ Pendiente, es la siguiente decisión real del roadmap. Ver §14 y §20 |
 | **Fase 3** — Ontología V1 | ✅ Consolidada (contrato canónico único, CI verde). Ver `docs/CONSOLIDATION-3-4.md` |
 | **Fase 4** — Outfit Layer | ✅ Consolidada (creación/revisión/publicación con validación fail-closed). Ver `docs/CONSOLIDATION-3-4.md` |
-| Fase 5 — Website Builder MVP | Posterior. Investigación previa registrada: inventariar y comparar los builders existentes en los repositorios del propietario antes de elegir base |
+| Fase 5 — Website Builder MVP | No iniciada. Investigación previa registrada: inventariar y comparar los builders existentes en los repositorios del propietario antes de elegir base |
 | Fases 6-10 | Según roadmap |
 
 ---
@@ -1003,7 +1004,7 @@ Este módulo no sustituye un virtual try-on físico ni garantiza caída real sob
 
 ---
 
-### Fase 2 — Persistencia y pipeline profesional
+### Fase 2 (2A–2F) — Persistencia y pipeline profesional
 
 - Reemplazar JSON/localStorage como fuente de verdad.
 - Base de datos inicial.
@@ -1016,6 +1017,49 @@ Este módulo no sustituye un virtual try-on físico ni garantiza caída real sob
 - Separar extracción y modeled rendering.
 
 **Criterio de salida:** un job sobrevive a reinicios y sus ediciones se ven en cualquier navegador autorizado del entorno de prueba.
+
+**Estado:** ✅ criterio de salida cumplido y validado en local (ver `docs/PHASE-2F-LOCAL-DEMO.md`):
+6 prendas, 5 outfits y 16 assets persistidos en PostgreSQL + storage compartido; un job real
+contra OpenAI (`generate_outfit_editorial` para el outfit Office Crisp) completado de extremo
+a extremo; Denim Shirt Day correctamente en `REJECTED`; publicación segura del catálogo con
+v4 `active` y v1–v3 `withdrawn`, servida en `/public/projects/sol-store/catalog`; Wardrobe en
+modo plataforma (API MODE) y MIRRORA consumiendo el catálogo real fueron validados
+visualmente. Todo esto vive en PRs en draft, sin mergear: `Fashion-Studio-SOL` PR #3,
+`wardrobe` PR #2, `MIRRORA-Style-Studio` PR #3.
+
+Nota para futuras sesiones: las URLs de esta validación son de entorno local
+(`localhost`/IP LAN). Que una URL documentada no coincida con la usada en una sesión
+posterior no es, por sí solo, criterio de fallo — la URL pública estable es objetivo de
+la Fase 2G, no de esta fase.
+
+---
+
+### Fase 2G — Despliegue externo
+
+**Objetivo:** llevar lo validado en local (Fase 2A–2F) a un entorno externo real, sin cambiar
+la semántica ya consolidada del contrato `fashion-schema` ni de la API.
+
+- Desplegar la API de plataforma, el worker y MIRRORA fuera de `localhost`.
+- Mover base de datos y storage a un proveedor cloud (no disco/Postgres local).
+- Gestionar `OPENAI_API_KEY`, `ADMIN_API_TOKEN` y `STORAGE_SIGNING_SECRET` como variables
+  seguras del entorno externo, no en `.env` local.
+- Configurar `ALLOWED_ORIGINS`/CORS para los dominios reales de Wardrobe y MIRRORA.
+- Asignar dominio o URL de preview pública para MIRRORA y el catálogo publicado.
+- Ejecutar el worker en el entorno cloud, no como proceso local.
+- Confirmar que las llamadas reales a OpenAI (detección, reconstrucción, modelado,
+  editorial) funcionan igual en el entorno externo que en local.
+- QA multidispositivo real (no solo LAN) para MIRRORA, SavedLook y QR.
+- Auditoría final antes de cualquier merge: CI verde, diff revisado, secretos revisados,
+  smoke test en el entorno externo, aprobación explícita.
+
+**Orden de merge acordado cuando el checklist anterior esté cerrado:**
+1. `Fashion-Studio-SOL` PR #3.
+2. `wardrobe` PR #2.
+3. `MIRRORA-Style-Studio` PR #3.
+
+**Criterio de salida:** el mismo recorrido validado en local en Fase 2F (Wardrobe en API MODE,
+catálogo publicado, MIRRORA consumiéndolo, SavedLook + QR multidispositivo) funciona igual
+contra URLs públicas reales, no locales.
 
 ---
 
@@ -1277,17 +1321,17 @@ research/tryon-benchmark
 
 Fases 0, 1, 3 y 4 están completadas y consolidadas (contrato canónico único,
 máquina de estados protegida, CI verde en los tres repos; ver
-`docs/CONSOLIDATION-3-4.md`). Los PR permanecen en draft a la espera de aprobación.
+`docs/CONSOLIDATION-3-4.md`).
 
-**Siguiente decisión real del roadmap: Fase 2 — Persistencia y pipeline profesional.**
-Es el desbloqueo pendiente antes de cualquier SaaS. Decisión a tomar:
+Fase 2 (2A–2F) — persistencia y pipeline profesional — ya no es una decisión pendiente:
+está **validada de extremo a extremo en local** (PostgreSQL, storage, jobs, worker, Wardrobe
+en API MODE, MIRRORA consumiendo el catálogo real; ver `docs/PHASE-2F-LOCAL-DEMO.md`). Los
+tres PR (`Fashion-Studio-SOL` #3, `wardrobe` #2, `MIRRORA-Style-Studio` #3) permanecen en
+draft, con CI verde, a la espera de cerrar Fase 2G antes de mergear.
 
-1. Elegir base de datos y storage (el roadmap propone PostgreSQL/Supabase + storage
-   con URLs firmadas) manteniendo estables los IDs y el contrato `fashion-schema`.
-2. Migrar la fuente de verdad de JSON local (`wardrobe/data`) y localStorage
-   (MIRRORA) a persistencia compartida **sin cambiar la semántica** ya consolidada.
-3. Extraer la Studio API y el pipeline de import a un servicio desplegable
-   (hoy viven en el dev server de Vite).
+**Siguiente decisión real del roadmap: Fase 2G — Despliegue externo** (ver §14). No avanzar
+a Fase 5 todavía. El desbloqueo pendiente antes de cualquier SaaS es sacar esta plataforma de
+`localhost` a un entorno externo real sin romper el contrato `fashion-schema` ya validado.
 
 En paralelo, investigación previa de Fase 5 (Website Builder): inventariar y comparar
 los builders existentes en los repositorios del propietario antes de elegir base.

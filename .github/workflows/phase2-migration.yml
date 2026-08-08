@@ -1,0 +1,101 @@
+name: Phase 2 Migration
+on:
+  push:
+    branches: ["phase-2/**"]
+  pull_request:
+    branches: ["main"]
+jobs:
+  wardrobe-migration:
+    runs-on: ubuntu-latest
+    services:
+      postgres:
+        image: postgres:16
+        env:
+          POSTGRES_USER: fashion
+          POSTGRES_PASSWORD: fashion
+          POSTGRES_DB: fashion_studio
+        ports: ["5432:5432"]
+        options: >-
+          --health-cmd="pg_isready -U fashion -d fashion_studio"
+          --health-interval=10s --health-timeout=5s --health-retries=5
+    env:
+      PGHOST: localhost
+      PGPORT: 5432
+      PGUSER: fashion
+      PGPASSWORD: fashion
+      PGDATABASE: fashion_studio
+      DATABASE_URL: postgresql://fashion:fashion@localhost:5432/fashion_studio
+      STORAGE_ROOT: ${{ github.workspace }}/tmp/migration-storage
+      MIGRATION_PROJECT_ID: project-sol
+      WARDROBE_DATA_DIR: ${{ github.workspace }}/tmp/wardrobe-fixture
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: "22"
+      - name: Install runtime
+        run: npm install --no-package-lock --ignore-scripts
+      - name: Apply migrations 0001–0004
+        run: |
+          for f in database/migrations/0001_phase2_foundation.sql database/migrations/0002_phase2_assets.sql database/migrations/0003_phase2_jobs.sql database/migrations/0004_phase2_wardrobe_migration.sql; do
+            psql --set ON_ERROR_STOP=on --file "$f"
+          done
+      - name: Seed migration target
+        run: |
+          psql --set ON_ERROR_STOP=on <<'SQL'
+          INSERT INTO workspaces(id,slug,name) VALUES('ws-sol','sol','SOL');
+          INSERT INTO brands(id,workspace_id,slug,name) VALUES('brand-sol','ws-sol','sol','SOL');
+          INSERT INTO projects(id,workspace_id,brand_id,slug,name) VALUES('project-sol','ws-sol','brand-sol','sol-store','SOL Store');
+          SQL
+      - name: Create deterministic Wardrobe fixture
+        run: node tools/migration/create-wardrobe-fixture.mjs "$WARDROBE_DATA_DIR"
+      - name: Inventory and checksums
+        run: npm run migration:inventory -- --data-dir "$WARDROBE_DATA_DIR" --report ./tmp/inventory.json
+      - name: Dry-run changes nothing
+        run: |
+          npm run migration:dry-run -- --data-dir "$WARDROBE_DATA_DIR" --storage-root "$STORAGE_ROOT" --report ./tmp/dry-run.json
+          test "$(psql -Atc "select count(*) from garments where project_id='project-sol'")" -eq 0
+          test "$(psql -Atc "select count(*) from outfits where project_id='project-sol'")" -eq 0
+          test "$(psql -Atc "select count(*) from assets where project_id='project-sol'")" -eq 0
+      - name: Apply and compare before-after
+        run: |
+          npm run migration:apply -- --data-dir "$WARDROBE_DATA_DIR" --storage-root "$STORAGE_ROOT" --report ./tmp/apply.json
+          test "$(psql -Atc "select count(*) from garments where project_id='project-sol'")" -eq 2
+          test "$(psql -Atc "select count(*) from outfits where project_id='project-sol'")" -eq 1
+          test "$(psql -Atc "select count(*) from assets where project_id='project-sol'")" -eq 5
+          test "$(find "$STORAGE_ROOT" -type f | wc -l)" -eq 5
+      - name: Second apply is idempotent
+        run: |
+          npm run migration:apply -- --data-dir "$WARDROBE_DATA_DIR" --storage-root "$STORAGE_ROOT" --report ./tmp/apply-second.json
+          node -e "const r=require('./tmp/apply-second.json');if(!r.result.idempotent)process.exit(1)"
+          test "$(psql -Atc "select count(*) from garments where project_id='project-sol'")" -eq 2
+          test "$(psql -Atc "select count(*) from assets where project_id='project-sol'")" -eq 5
+      - name: Verify checksums in database and storage
+        run: |
+          node --input-type=module <<'NODE'
+          import {readFile} from 'node:fs/promises';import {createHash} from 'node:crypto';import pg from 'pg';import path from 'node:path';
+          const pool=new pg.Pool({connectionString:process.env.DATABASE_URL});
+          for(const row of (await pool.query("select storage_key,checksum_sha256 from assets where project_id='project-sol'")).rows){const b=await readFile(path.join(process.env.STORAGE_ROOT,row.storage_key));const h=createHash('sha256').update(b).digest('hex');if(h!==row.checksum_sha256)throw new Error('checksum mismatch')}
+          await pool.end();
+          NODE
+      - name: Rollback removes only created entities
+        run: |
+          RUN_ID=$(node -p "require('./tmp/apply.json').result.runId")
+          npm run migration:rollback -- --run-id "$RUN_ID" --storage-root "$STORAGE_ROOT" --report ./tmp/rollback.json
+          test "$(psql -Atc "select count(*) from garments where project_id='project-sol'")" -eq 0
+          test "$(psql -Atc "select count(*) from outfits where project_id='project-sol'")" -eq 0
+          test "$(psql -Atc "select count(*) from assets where project_id='project-sol'")" -eq 0
+          test "$(find "$STORAGE_ROOT" -type f 2>/dev/null | wc -l)" -eq 0
+          test "$(psql -Atc "select count(*) from migration_runs where status='rolled_back'")" -eq 1
+      - name: Validate OpenAI handlers without external calls
+        run: |
+          node --check services/platform-api/src/openai-client.mjs
+          node --check services/platform-api/src/openai-handlers.mjs
+          node --check services/platform-api/src/worker.mjs
+          node --input-type=module -e "import {createOpenAIHandlers} from './services/platform-api/src/openai-handlers.mjs';if(Object.keys(createOpenAIHandlers({key:null})).length)process.exit(1)"
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: phase2e-migration-reports
+          path: tmp/*.json
+          retention-days: 3

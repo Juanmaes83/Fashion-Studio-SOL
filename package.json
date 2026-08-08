@@ -6,6 +6,18 @@
     "pretest": "node tools/prepare-test-data.mjs",
     "test": "node --test",
     "build:schemas": "node tools/build-schemas.mjs",
-    "check:schemas": "node tools/build-schemas.mjs --check"
+    "check:schemas": "node tools/build-schemas.mjs --check",
+    "api:start": "node services/platform-api/src/server.mjs",
+    "worker:start": "node services/platform-api/src/worker.mjs",
+    "start:prod": "node services/platform-api/scripts/start-all.mjs",
+    "api:smoke": "node services/platform-api/scripts/smoke.mjs",
+    "jobs:smoke": "node services/platform-api/scripts/jobs-smoke.mjs",
+    "migration:inventory": "node tools/wardrobe-migrate.mjs inventory",
+    "migration:dry-run": "node tools/wardrobe-migrate.mjs dry-run",
+    "migration:apply": "node tools/wardrobe-migrate.mjs apply",
+    "migration:rollback": "node tools/wardrobe-migrate.mjs rollback"
+  },
+  "dependencies": {
+    "pg": "^8.16.3"
   }
 }
